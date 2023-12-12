@@ -14,6 +14,7 @@ namespace ATM_console_app.Models
 
     public enum ATMOperation
     {
+        CheckBalance,
         ToCreditAmount,
         DebitAmount,
         EditAccountDetails,

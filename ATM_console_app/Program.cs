@@ -1,4 +1,5 @@
-﻿using ATM_console_app.Models;
+﻿using ATM_console_app.Data;
+using ATM_console_app.Models;
 using ATM_console_app.Services;
 using System;
 
@@ -21,6 +22,10 @@ class Program
 
     private void WelcomeMenu()
     {
+        Console.WriteLine("***********************************");
+        AccountData.AccountHoldersDetails.ForEach(e => Console.WriteLine(e.FullName));
+        Console.WriteLine("***********************************");
+
         Console.WriteLine(Constants.welcomeMessage);
         Console.WriteLine(Constants.chooseOperation);
 
@@ -45,7 +50,7 @@ class Program
                         var aadharNum = Convert.ToInt32(Console.ReadLine());
                         Console.WriteLine(Constants.seperateLine);
 
-                        var accountHolderDetails = new AccountHolder(fullName, mobileNum, address, aadharNum, "");
+                        var accountHolderDetails = new AccountHolder(fullName, mobileNum, address, aadharNum, "", initialAmount:1000);
                         var dataIsCorrect = accountService.IsAccountDetailsCorrect(accountHolderDetails);
 
                         if (dataIsCorrect)
@@ -57,9 +62,7 @@ class Program
                             var isAccountExist = accountService.CheckAccountExist(accountNum);
                             if (isAccountExist)
                             {
-
-
-                                AccountOperation(accountHolderDetails.AccountNum);
+                                AccountOperation(accountHolderDetails);
                             }
                         }
                         break;
@@ -75,41 +78,49 @@ class Program
         }
     }
 
-    private void AccountOperation(string accountNumber)
+    private void AccountOperation(AccountHolder holder)
     {
         
-        //Console.WriteLine(Constants.seperateLine);
-        //Console.WriteLine(Constants.enterAccountNum);
-        //var accountNum = Console.ReadLine();
-        //var isAccountExist = accountService.CheckAccountExist(accountNum);
-
+       
         
         
             Console.WriteLine(Constants.seperateLine);
             Console.WriteLine(Constants.accountOperations);
             var userInput = Convert.ToInt32(Console.ReadLine());
 
-            while (true)
-        {
+        //    while (true)
+        //{
                 try
                 {
                     switch (GetATMService(userInput))
                     {
-                        case ATMOperation.ToCreditAmount:
+                     case  ATMOperation.CheckBalance:
+                           Console.WriteLine("Check Your balance.");
+                           var balance = accountDetailsService.checkBalance(holder);
+                           Console.WriteLine(balance); ;
+                           break;
+
+                    case ATMOperation.ToCreditAmount:
                             Console.WriteLine(Constants.enterAmountToCredit);
-                            var creditAmount = Console.ReadLine();
-                        
-                            break;
+                            var creditAmount = int.Parse(Console.ReadLine());
+                        var amount = holder.InitialAmount + creditAmount;
+                   
+                       
+                        AccountData.AccountHoldersDetails.ForEach(e => e.InitialAmount = e.InitialAmount + creditAmount);
+
+                   
+
+
+                        Console.WriteLine(amount);
+                        break;
 
                         case ATMOperation.DebitAmount:
                             Console.WriteLine(Constants.enterAmountToDebit);
                             var debitAmount = Console.ReadLine();
-                           
                             break;
 
                         case ATMOperation.EditAccountDetails:
                             Console.WriteLine(Constants.editAccountDetails);
-                       
                             break;
 
                         case ATMOperation.TakeHelp:
@@ -125,7 +136,7 @@ class Program
                     Console.WriteLine(e.Message);
 
                 
-            }
+           // }
         }
     }
 
@@ -142,14 +153,16 @@ class Program
     public static ATMOperation GetATMService(int value)
     {
         if (value == 1)
-            return ATMOperation.ToCreditAmount;
+            return ATMOperation.CheckBalance;
         else if (value == 2)
-            return ATMOperation.DebitAmount;
+            return ATMOperation.ToCreditAmount;
         else if (value == 3)
-            return ATMOperation.EditAccountDetails;
+            return ATMOperation.DebitAmount;
         else if (value == 4)
+            return ATMOperation.EditAccountDetails;
+        else if (value == 5)
             return ATMOperation.TakeHelp;
         else
-            return ATMOperation.Exit;
+            return default;
     }
 }

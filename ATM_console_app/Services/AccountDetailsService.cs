@@ -12,15 +12,14 @@ namespace ATM_console_app.Services
     class AccountDetailsService
     {
 
-
-        //private AccountData accountData;
-
+        
         AccountData accountData = new AccountData();
         public void AddHolderDetails(AccountHolder holder)
         {
-            
+
             AccountData.AccountHoldersDetails.Add(holder);
-          //  accountData.AccountHoldersDetails.Add(holder);
+
+          
         }
 
         public bool CheckAccountExistence(String accountNumber)
@@ -30,6 +29,20 @@ namespace ATM_console_app.Services
             AccountData.AccountHoldersDetails.FirstOrDefault(holder => holder.AccountNum == accountNumber);
             return holder != null; 
         }
-        
+
+        public int checkBalance(AccountHolder holder)
+        {
+            return holder.InitialAmount;
+        }
+
+        public void creditAmount(AccountHolder holder, int amount)
+        {
+         AccountHolder Accholder = new   AccountHolder(holder.FullName, holder.MobileNum, holder.Address, holder.AadharNum, holder.AccountNum, amount);
+            AccountData.AccountHoldersDetails.Add(Accholder);
+            
+           // AccountData.AccountHoldersDetails.Where(holder => holder.InitialAmount == holder.InitialAmount + amount);
+           
+        }
+
     }
 }
