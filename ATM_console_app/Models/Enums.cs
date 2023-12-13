@@ -19,6 +19,13 @@ namespace ATM_console_app.Models
         DebitAmount,
         EditAccountDetails,
         TakeHelp,
+        ToOpenAccount,
         Exit
+    }
+
+    public enum UpdateDetails
+    {
+        ToUpdateName,
+        ToUpdateAddress
     }
 }

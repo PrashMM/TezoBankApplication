@@ -9,10 +9,6 @@ namespace ATM_console_app.Data
 {
      class AccountData
     {
-
-
-        public static List<AccountHolder> AccountHoldersDetails { get; set; } = new List<AccountHolder>();
-
-        
-    }
+           public static List<AccountHolder> AccountHoldersDetails { get; set; } = new List<AccountHolder>();
+     }
 }

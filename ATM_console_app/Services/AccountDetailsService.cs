@@ -12,19 +12,14 @@ namespace ATM_console_app.Services
     class AccountDetailsService
     {
 
-        
         AccountData accountData = new AccountData();
         public void AddHolderDetails(AccountHolder holder)
         {
-
-            AccountData.AccountHoldersDetails.Add(holder);
-
-          
+             AccountData.AccountHoldersDetails.Add(holder);
         }
 
         public bool CheckAccountExistence(String accountNumber)
         {
-            
             var holder =
             AccountData.AccountHoldersDetails.FirstOrDefault(holder => holder.AccountNum == accountNumber);
             return holder != null; 
@@ -35,13 +30,32 @@ namespace ATM_console_app.Services
             return holder.InitialAmount;
         }
 
-        public void creditAmount(AccountHolder holder, int amount)
+        public void creditAmount(AccountHolder holder, int creditAmount)
         {
-         AccountHolder Accholder = new   AccountHolder(holder.FullName, holder.MobileNum, holder.Address, holder.AadharNum, holder.AccountNum, amount);
-            AccountData.AccountHoldersDetails.Add(Accholder);
-            
-           // AccountData.AccountHoldersDetails.Where(holder => holder.InitialAmount == holder.InitialAmount + amount);
-           
+            holder.InitialAmount += creditAmount;
+            Console.WriteLine(Constants.yourBalanceIs + holder.InitialAmount);
+        }
+
+        public void debitAmount(AccountHolder holder, int debitAmount)
+        {
+            holder.InitialAmount -= debitAmount;
+            Console.WriteLine(Constants.yourBalanceIs + holder.InitialAmount);
+        }
+
+        public void updateName(AccountHolder accountHolder)
+        {
+            var oldName = accountHolder.FullName;
+            var newName = Console.ReadLine();
+            accountHolder.FullName = newName ?? "";
+            Console.WriteLine($"Your name '{oldName}' is updated to" + accountHolder.FullName);
+        }
+
+        public void updateAddress(AccountHolder accountHolder)
+        {
+            var oldAddress = accountHolder.Address;
+            var newAddress = Console.ReadLine();
+            accountHolder.Address = newAddress ?? "";
+            Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to" + accountHolder.Address);
         }
 
     }
