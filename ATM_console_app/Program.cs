@@ -22,18 +22,12 @@ class Program
 
     private void WelcomeMenu()
     {
-        Console.WriteLine("***********************************");
-        AccountData.AccountHoldersDetails.ForEach(e => Console.WriteLine(e.FullName));
-        Console.WriteLine("***********************************");
-
         Console.WriteLine(Constants.welcomeMessage);
         Console.WriteLine(Constants.chooseOperation);
 
         var userInput = Convert.ToInt32(Console.ReadLine());
 
-        while (true)
-        {
-            try
+          try
             {
                 switch (GetMainMenuByInput(userInput))
                 {
@@ -62,23 +56,24 @@ class Program
                             var isAccountExist = accountService.CheckAccountExist(accountNum);
                             if (isAccountExist)
                             {
-                                AccountOperation(accountHolderDetails);
+                                AccountOperation(accountHolderDetails, accountNum);
                             }
                         }
                         break;
 
                     case MainMenu.ToExit:
-                        return;
+                         return;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-        }
+        
+
     }
 
-    private void AccountOperation(AccountHolder holder)
+    private void AccountOperation(AccountHolder holder,string accountNum)
     {
         
        
@@ -88,36 +83,73 @@ class Program
             Console.WriteLine(Constants.accountOperations);
             var userInput = Convert.ToInt32(Console.ReadLine());
 
-        //    while (true)
-        //{
-                try
+        while (true)
+        {
+            try
                 {
                     switch (GetATMService(userInput))
                     {
                      case  ATMOperation.CheckBalance:
                            Console.WriteLine("Check Your balance.");
                            var balance = accountDetailsService.checkBalance(holder);
-                           Console.WriteLine(balance); ;
+
+                    var aHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountNum.Equals(accountNum));
+
+                   
+                    if (aHolder != null)
+                    {
+         
+                        Console.WriteLine("Updated balance: " + aHolder.InitialAmount);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Account not found.");
+                    }
+                    Console.WriteLine(balance); ;
                            break;
 
                     case ATMOperation.ToCreditAmount:
                             Console.WriteLine(Constants.enterAmountToCredit);
                             var creditAmount = int.Parse(Console.ReadLine());
-                        var amount = holder.InitialAmount + creditAmount;
-                   
-                       
-                        AccountData.AccountHoldersDetails.ForEach(e => e.InitialAmount = e.InitialAmount + creditAmount);
-
-                   
+                       // var amount = holder.InitialAmount + creditAmount;
 
 
-                        Console.WriteLine(amount);
+                    //AccountData.AccountHoldersDetails.ForEach(e => e.AccountNum.Equals(accountNum));
+                    //{
+                    //    AccountData.AccountHoldersDetails.ForEach(e => e.InitialAmount = e.InitialAmount + creditAmount);
+                    //}
+
+                    var accountHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountNum.Equals(accountNum));
+
+                    if (accountHolder != null)
+                    {
+                        accountHolder.InitialAmount += creditAmount;
+                        Console.WriteLine("Updated balance: " + accountHolder.InitialAmount);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Account not found.");
+                    }
+
+               
                         break;
 
                         case ATMOperation.DebitAmount:
                             Console.WriteLine(Constants.enterAmountToDebit);
-                            var debitAmount = Console.ReadLine();
-                            break;
+                            var debitAmount = int.Parse(Console.ReadLine());
+                    var accHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountNum.Equals(accountNum));
+
+                  
+                    if (accHolder != null)
+                    {
+                        accHolder.InitialAmount -= debitAmount;
+                        Console.WriteLine("Updated balance: " + accHolder.InitialAmount);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Account not found.");
+                    }
+                    break;
 
                         case ATMOperation.EditAccountDetails:
                             Console.WriteLine(Constants.editAccountDetails);
@@ -136,7 +168,7 @@ class Program
                     Console.WriteLine(e.Message);
 
                 
-           // }
+            }
         }
     }
 
