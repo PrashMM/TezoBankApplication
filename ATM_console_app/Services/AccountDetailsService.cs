@@ -12,32 +12,10 @@ namespace ATM_console_app.Services
     class AccountDetailsService
     {
 
-        //AccountData accountData = new AccountData();
         public void AddHolderDetails(AccountHolder holder)
         {
             AccountData.AccountHoldersDetails.Add(holder);
         }
-
-        //public bool CheckAccountExistence(string accountNumber)
-        //{
-        //    var holder =
-        //    AccountData.AccountHoldersDetails.FirstOrDefault(holder => holder.AccountNumber == accountNumber);
-        //    return holder != null; 
-        //}
-       
-
-        //public double checkBalance(AccountHolder holder)
-        //{
-        //    return holder.InitialAmount;
-        //}
-
-        //public void creditAmount(AccountHolder holder, int creditAmount)
-        //{
-
-        //    holder.AccountDetails.Balance += creditAmount;
-        //    Console.WriteLine(Constants.yourBalanceIs + holder.AccountDetails.Balance);
-        //    Console.WriteLine("You are good to go. Thank You :) ");
-        //}
 
         public void CreditAccount(AccountHolder holder, double creditAmount)
         {
@@ -49,10 +27,6 @@ namespace ATM_console_app.Services
         {
              holder.AccountDetails.Balance -= debitAmount;
         }
-
-       
-
-        
 
     }
 }

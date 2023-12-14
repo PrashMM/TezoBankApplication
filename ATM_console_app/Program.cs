@@ -209,8 +209,10 @@ class Program
             return ATMOperation.TakeHelp;
         else if (value == 6)
             return ATMOperation.OpenAccount;
-        else
+        else if (value == 7)
             return ATMOperation.Exit;
+        else
+            return default;
     }
 
     public static UpdateDetails UpdateDetailsByInput(int value)
