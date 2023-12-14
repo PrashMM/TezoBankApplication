@@ -71,6 +71,7 @@ class Program
         Console.WriteLine(Constants.seperateLine);
         Console.WriteLine(Constants.enterAccountNum);
         var accountNum = Console.ReadLine();
+
         var isAccountExist = accountService.CheckAccountExist(accountNum);
         if (isAccountExist)
         {

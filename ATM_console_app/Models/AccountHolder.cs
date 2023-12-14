@@ -8,7 +8,7 @@ namespace ATM_console_app.Models
 {
     class AccountHolder
     {
-        public AccountHolder(string fullName, int mobileNum, string address, int aadharNum, string accountNum, int initialAmount)
+        public AccountHolder(string fullName, int mobileNum, string address, int aadharNum, string accountNum, double initialAmount)
         {
             FullName = fullName;
             MobileNum = mobileNum;
@@ -20,14 +20,15 @@ namespace ATM_console_app.Models
 
         private String name;
 
-        public string FullName { get { return name; } set{
-                name = "Mr. " + value;
-} }
+        public string FullName {
+            get { return name; } 
+            set {  name = "Mr. " + value; } 
+        }
         public int MobileNum { get; set; }
         public string Address { get; set; }
         public int AadharNum { get; set; }
         public string AccountNum { get; set; }
-        public int InitialAmount { get; set; }
+        public double InitialAmount { get; set; }
     }
 }
 

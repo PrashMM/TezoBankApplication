@@ -34,5 +34,7 @@ namespace ATM_console_app.Models
         public static String enterToUpdateDetails= "** Press 1 to Update Name,\n** Press 2 to Update Address";
         public static String enterNameToUpdate = "Enter name to update";
         public static String enterAddressToUpdate = "Enter Address to update";
+        public static String thankYou = "You are good to go. Thank You :) ";
+        public static String insufficientBalance = "Insufficient Balance";
     }
 }
