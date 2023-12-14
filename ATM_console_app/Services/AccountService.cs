@@ -13,41 +13,30 @@ namespace ATM_console_app.Services
 {
      class AccountService
     {
-      
-        private AccountDetailsService accountDetailsService = new AccountDetailsService();
 
-        public bool IsAccountDetailsCorrect(AccountHolder holder)
-        {
-            ShowAccountDetails(holder);
-            var dataIsCorrect = Console.ReadLine();
-            Console.WriteLine(Constants.seperateLine);
-            return (dataIsCorrect == "Y" || dataIsCorrect == "y");
-        }
-        
-        public void ShowAccountDetails(AccountHolder holder)
-        {
-            Console.WriteLine(Constants.checkAllDetails);
-            Console.WriteLine($"*+*+* Account Number: {CreateAccountNumber(holder)} \n*+*+* Name: {holder.FullName} \n*+*+* Mobile Number:{holder.MobileNum} \n*+*+* Address: {holder.Address} \n*+*+* Aadhar Number = {holder.AadharNum} ");
-            Console.WriteLine(Constants.ifCorrectPressYToProcced);
-        }
+        // private AccountDetailsService accountDetailsService = new AccountDetailsService();
 
-        public String CreateAccountNumber(AccountHolder holder)
+
+
+
+
+        //public bool CheckAccountExist(string accountNum)
+        //{
+
+        //    return accountDetailsService.CheckAccountExistence(accountNum);
+        //}
+
+        public bool CheckAccountExistence(string accountNumber)
         {
-          holder.AccountNum = $"ATM0{holder.FullName[0]}{holder.MobileNum}";
-          return holder.AccountNum;
+            return AccountData.AccountHoldersDetails.Any(holder => holder.AccountDetails.AccountNumber == accountNumber);
         }
 
-        public bool CheckAccountExist(string accountNum)
-        {
-            
-            return accountDetailsService.CheckAccountExistence(accountNum);
-        }
 
-        public void HelpService()
-        {
-            Console.WriteLine(Constants.writeEmailandQuery);
-            Console.ReadLine();
-            Console.WriteLine(Constants.teamWillReachOutToYou);
-        } 
+        //public void HelpService()
+        //{
+        //    Console.WriteLine(Constants.writeEmailandQuery);
+        //    Console.ReadLine();
+        //    Console.WriteLine(Constants.teamWillReachOutToYou);
+        //} 
     }
 }

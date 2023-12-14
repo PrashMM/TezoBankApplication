@@ -8,24 +8,24 @@ namespace ATM_console_app.Models
 {
     public enum MainMenu
     {
-        ToOpenAccount = 1,
-        ToExit,
+        OpenAccount = 1,
+        Exit,
     }
 
     public enum ATMOperation
     {
         CheckBalance,
-        ToCreditAmount,
-        DebitAmount,
+        Deposit,
+        Withdraw,
         EditAccountDetails,
         TakeHelp,
-        ToOpenAccount,
+        OpenAccount,
         Exit
     }
 
     public enum UpdateDetails
     {
-        ToUpdateName,
-        ToUpdateAddress
+        UpdateName,
+        UpdateAddress
     }
 }

@@ -6,55 +6,57 @@ using System.ComponentModel.Design;
 
 class Program
 {
-    private AccountService accountService;
-    private AccountDetailsService accountDetailsService;
-
-    public Program()
-    {
-        this.accountService = new AccountService();
-        this.accountDetailsService = new AccountDetailsService();
-    }
+    private static AccountService accountService;
+    private static AccountDetailsService accountDetailsService;
+    private static UserInputOutput userInputOutputService;
 
     public static void Main()
     {
-        Program program = new Program();
-        program.WelcomeMenu();
+        InitializeServices();
+        WelcomeMenu();
     }
 
-    private void WelcomeMenu()
+    private static void InitializeServices()
+    {
+        accountService = new AccountService();
+        accountDetailsService = new AccountDetailsService();
+        userInputOutputService = new UserInputOutput();
+    }
+
+    public static void WelcomeMenu()
     {
         Console.WriteLine(Constants.welcomeMessage);
         Console.WriteLine(Constants.chooseOperation);
-
-        var userInput = Convert.ToInt32(Console.ReadLine());
-
+         
+        int.TryParse(Console.ReadLine(), out var userInput);
+        
           try
             {
                 switch (GetMainMenuByInput(userInput))
                 {
-                    case MainMenu.ToOpenAccount:
+                    case MainMenu.OpenAccount:
                         Console.WriteLine(Constants.enterFollowingDetails);
                         Console.WriteLine(Constants.seperateLine);
                         Console.WriteLine(Constants.enterFullName);
                         var fullName = Console.ReadLine();
-                        Console.WriteLine(Constants.enterMobileNum);
-                        var mobileNum = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine(Constants.enterMobileNumber);
+                        var mobileNumber = Console.ReadLine();
                         Console.WriteLine(Constants.enterAddress);
                         var address = Console.ReadLine();
-                        Console.WriteLine(Constants.enterAadharCardNum);
-                        var aadharNum = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine(Constants.enterAadharCardNumber);
+                        var aadharNumber = Console.ReadLine();
                         Console.WriteLine(Constants.seperateLine);
 
-                        var accountHolderDetails = new AccountHolder(fullName, mobileNum, address, aadharNum, "", initialAmount:1000);
-                        var dataIsCorrect = accountService.IsAccountDetailsCorrect(accountHolderDetails);
+                        var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, aadharNumber, "", initialAmount:1000,balance:1000 );
+                        var dataIsCorrect = userInputOutputService.IsAccountDetailsCorrect(accountHolderDetails);
 
-                        if (dataIsCorrect)
+                           if (dataIsCorrect)
                             accountDetailsService.AddHolderDetails(accountHolderDetails);
                             AccountOperation();
 
                         break;
 
-                    case MainMenu.ToExit:
+                    case MainMenu.Exit:
                          return;
                 }
             }
@@ -66,13 +68,13 @@ class Program
 
     }
 
-    private void AccountOperation()
+    private static void AccountOperation()
     {
         Console.WriteLine(Constants.seperateLine);
-        Console.WriteLine(Constants.enterAccountNum);
-        var accountNum = Console.ReadLine();
+        Console.WriteLine(Constants.enterAccountNumber);
+        var accountNumber = Console.ReadLine();
 
-        var isAccountExist = accountService.CheckAccountExist(accountNum);
+        var isAccountExist = accountService.CheckAccountExistence(accountNumber);
         if (isAccountExist)
         {
             Console.WriteLine(Constants.seperateLine);
@@ -81,9 +83,10 @@ class Program
         else
         {
             Console.WriteLine(Constants.accountNotFound);
+            return;
         }
             var userInput = Convert.ToInt32(Console.ReadLine());
-            var accountHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountNum.Equals(accountNum));
+            var accountHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountDetails.AccountNumber.Equals(accountNumber));
         
         
        
@@ -97,49 +100,71 @@ class Program
                     {
                         case ATMOperation.CheckBalance:
                              Console.WriteLine(Constants.checkAccountBalance);
-                             Console.WriteLine(Constants.yourBalanceIs + accountHolder.InitialAmount);
+                             Console.WriteLine(Constants.yourBalanceIs + accountHolder.AccountDetails.Balance);
                              break;
 
-                        case ATMOperation.ToCreditAmount:
+                        case ATMOperation.Deposit:
                             Console.WriteLine(Constants.enterAmountToCredit);
-                            var creditAmount = int.Parse(Console.ReadLine());
-                            accountDetailsService.creditAmount(accountHolder, creditAmount);
+
+                            if (int.TryParse(Console.ReadLine(), out var creditAmount) && creditAmount >= 0)
+                            {
+                                accountDetailsService.CreditAccount(accountHolder, creditAmount);
+                                Console.WriteLine(Constants.yourBalanceIs + accountHolder.AccountDetails.Balance);
+                                Console.WriteLine(Constants.thankYou);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please enter valid amount ");
+                            }
+                            
                             break;
 
-                        case ATMOperation.DebitAmount:
+                        case ATMOperation.Withdraw:
                             Console.WriteLine(Constants.enterAmountToDebit);
-                            var debitAmount = int.Parse(Console.ReadLine());
-                            accountDetailsService.debitAmount(accountHolder, debitAmount);
+
+                            int.TryParse(Console.ReadLine(), out var debitAmount);
+                            if (accountHolder.AccountDetails.Balance > debitAmount && debitAmount >= 0)
+                            {
+                                accountDetailsService.debitAmount(accountHolder, debitAmount);
+                                Console.WriteLine(Constants.yourBalanceIs + accountHolder.AccountDetails.Balance);
+                                Console.WriteLine(Constants.thankYou);
+                            }
+                            else
+                            {
+                                Console.WriteLine(Constants.insufficientBalance);
+                            }
+
                             break;
 
                         case ATMOperation.EditAccountDetails:
                             Console.WriteLine(Constants.editAccountDetails);
                             Console.WriteLine(Constants.enterToUpdateDetails);
-                            var updateInput = int.Parse(Console.ReadLine());
+                            int.TryParse(Console.ReadLine(), out var updateInput);
                             switch(UpdateDetailsByInput(updateInput))
                             {
-                                case UpdateDetails.ToUpdateName:
+                                case UpdateDetails.UpdateName:
                                     Console.WriteLine(Constants.enterNameToUpdate);
-                                    accountDetailsService.updateName(accountHolder);
-                                    
+                                    userInputOutputService.updateName(accountHolder);
                                     break;
-                                case UpdateDetails.ToUpdateAddress:
+
+                                case UpdateDetails.UpdateAddress:
                                     Console.WriteLine(Constants.enterAddressToUpdate);
-                                    accountDetailsService.updateAddress(accountHolder);
+                                    userInputOutputService.updateAddress(accountHolder);
                                     break;
                             }
                             break;
 
                         case ATMOperation.TakeHelp:
-                            accountService.HelpService();
+                            userInputOutputService.HelpService();
                             break;
 
-                        case ATMOperation.ToOpenAccount:
+                        case ATMOperation.OpenAccount:
                             WelcomeMenu();
                             break;
 
                         case ATMOperation.Exit:
-                            return;
+                            Console.WriteLine(Constants.thankYou);
+                            break;
                     }
                 }
                 catch (Exception e)
@@ -163,9 +188,9 @@ class Program
     public static MainMenu GetMainMenuByInput(int value)
     {
         if (value == 1)
-            return MainMenu.ToOpenAccount;
+            return MainMenu.OpenAccount;
         else if (value == 2)
-            return MainMenu.ToExit;
+            return MainMenu.Exit;
         else
             return default;
     }
@@ -175,25 +200,25 @@ class Program
         if (value == 1)
             return ATMOperation.CheckBalance;
         else if (value == 2)
-            return ATMOperation.ToCreditAmount;
+            return ATMOperation.Deposit;
         else if (value == 3)
-            return ATMOperation.DebitAmount;
+            return ATMOperation.Withdraw;
         else if (value == 4)
             return ATMOperation.EditAccountDetails;
         else if (value == 5)
             return ATMOperation.TakeHelp;
         else if (value == 6)
-            return ATMOperation.ToOpenAccount;
+            return ATMOperation.OpenAccount;
         else
-            return default;
+            return ATMOperation.Exit;
     }
 
     public static UpdateDetails UpdateDetailsByInput(int value)
     {
         if (value == 1)
-            return UpdateDetails.ToUpdateName;
+            return UpdateDetails.UpdateName;
         else if (value == 2)
-            return UpdateDetails.ToUpdateAddress;
+            return UpdateDetails.UpdateAddress;
         else
             return default;
     }
