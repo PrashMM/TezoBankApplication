@@ -17,13 +17,13 @@ namespace ATM_console_app.Services
             AccountData.AccountHoldersDetails.Add(holder);
         }
 
-        public void CreditAccount(AccountHolder holder, double creditAmount)
+        public void DepositFunds(AccountHolder holder, double creditAmount)
         {
             holder.AccountDetails.Balance += creditAmount;
         }
 
 
-        public void debitAmount(AccountHolder holder, int debitAmount)
+        public void WithdrawFunds(AccountHolder holder, int debitAmount)
         {
              holder.AccountDetails.Balance -= debitAmount;
         }

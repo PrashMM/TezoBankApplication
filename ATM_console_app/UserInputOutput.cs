@@ -18,43 +18,38 @@ using System.Threading.Tasks;
         public void ShowAccountDetails(AccountHolder holder)
         {
             Console.WriteLine(Constants.checkAllDetails);
-            Console.WriteLine($"*+*+* Account Number: {CreateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Address: {holder.CustomerDetails.Address} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
+            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Address: {holder.CustomerDetails.Address} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
             Console.WriteLine(Constants.ifCorrectPressYToProcced);
         }
 
    
-    public string CreateAccountNumber(AccountHolder holder)
-    {
-        if (!string.IsNullOrEmpty(holder.CustomerDetails.FullName))
+        public string GenerateAccountNumber(AccountHolder holder)
         {
+            if (!string.IsNullOrEmpty(holder.CustomerDetails.FullName))
+           {
             holder.AccountDetails.AccountNumber = $"ATM0{holder.CustomerDetails.FullName[5]}{holder.CustomerDetails.MobileNumber}";
             return holder.AccountDetails.AccountNumber;
-        }
-        else
-        {
-
-            Console.WriteLine("Warning: FullName is empty or null. Unable to create AccountNumber.");
+           }
+             else
+          {
+            Console.WriteLine(Constants.UnableToCreateAccountNumber);
             return null;
+          }
         }
-    }
 
 
 
 
     public void updateName(AccountHolder accountHolder)
     {
-        var oldName = accountHolder.CustomerDetails.FullName;
         var newName = Console.ReadLine();
         accountHolder.CustomerDetails.FullName = newName ?? "";
-        Console.WriteLine($"Your name '{oldName}' is updated to " + accountHolder.CustomerDetails.FullName);
     }
 
     public void updateAddress(AccountHolder accountHolder)
     {
-        var oldAddress = accountHolder.CustomerDetails.Address;
         var newAddress = Console.ReadLine();
         accountHolder.CustomerDetails.Address = newAddress ?? "";
-        Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to " + accountHolder.CustomerDetails.Address);
     }
 
     public void HelpService()

@@ -36,5 +36,7 @@ namespace ATM_console_app.Models
         public const string enterAddressToUpdate = "Enter Address to update";
         public const string thankYou = "You are good to go. Thank You :) ";
         public const string insufficientBalance = "Insufficient Balance";
-    }
+        public const string enterValidAmount = "Please enter valid amount";
+        public const string UnableToCreateAccountNumber= "Warning: FullName is empty or null. Unable to create AccountNumber.";
+    } 
 }
