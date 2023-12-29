@@ -135,9 +135,9 @@ class Program
                             accountHolderDetailsList.Remove(accountHolder);
 
                             var amountToDeposit = accountDetailsService.GetValidAmount();
-                            var holder1 =   accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
+                            var holderAfterDeposit =   accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
 
-                            accountHolderDetailsList.Add(holder1);
+                            accountHolderDetailsList.Add(holderAfterDeposit);
                             accountDetailsService.UpdateJson(accountHolderDetailsList);
 
                             break;
@@ -147,9 +147,9 @@ class Program
                             accountHolderDetailsList.Remove(accountHolder);
 
                             var amountToWithdraw = accountDetailsService.ValidateWithdrawAmount(accountNumber);
-                            var holder2=  accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
+                            var holderAfterWithdraw=  accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
 
-                            accountHolderDetailsList.Add(holder2);
+                            accountHolderDetailsList.Add(holderAfterWithdraw);
                             accountDetailsService.UpdateJson(accountHolderDetailsList);
 
                             break;
@@ -165,9 +165,9 @@ class Program
 
                                     Console.WriteLine(Constants.enterNameToUpdate);
                                     var oldName = accountHolder.CustomerDetails.FullName;
-                                    var newAccount =  accountDetailsService.UpdateName(accountHolder);
+                                    var holderAfterUpdateName =  accountDetailsService.UpdateName(accountHolder);
 
-                                    accountHolderDetailsList.Add(newAccount);
+                                    accountHolderDetailsList.Add(holderAfterUpdateName);
                                     accountDetailsService.UpdateJson(accountHolderDetailsList);
 
                                     Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
@@ -178,9 +178,9 @@ class Program
 
                                     Console.WriteLine(Constants.enterAddressToUpdate);
                                     var oldAddress = accountHolder.AddressDetails.AddressName;
-                                    var newAccount2 =  accountDetailsService.UpdateAddress(accountHolder);
+                                    var holderAfterUpdateAddress =  accountDetailsService.UpdateAddress(accountHolder);
 
-                                    accountHolderDetailsList.Add(newAccount2);
+                                    accountHolderDetailsList.Add(holderAfterUpdateAddress);
                                     accountDetailsService.UpdateJson(accountHolderDetailsList);
 
                                     Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.AddressDetails.AddressName}");
