@@ -30,18 +30,18 @@ namespace ATM_console_app.Services
              holder.AccountDetails.Balance -= debitAmount;
         }
 
-        public void UpdateName(AccountHolder accountHolder)
+        public AccountHolder UpdateName(AccountHolder accountHolder)
         {
             var newName = Console.ReadLine();
             accountHolder.CustomerDetails.FullName = newName ?? "";
-            UpdateJson(accountHolder);
+            return accountHolder;
         }
 
-        public void UpdateAddress(AccountHolder accountHolder)
+        public AccountHolder UpdateAddress(AccountHolder accountHolder)
         {
             var newAddress = Console.ReadLine();
             accountHolder.AddressDetails.AddressName = newAddress ?? "";
-            UpdateJson(accountHolder);
+            return accountHolder;
         }
 
         public AccountHolder GetAccountHolderByAccNumber(String accountNum) 
@@ -80,28 +80,27 @@ namespace ATM_console_app.Services
             }
         }
 
-        public void PerformDeposit(AccountHolder accountHolder, int amount)
+        public AccountHolder PerformDeposit(AccountHolder accountHolder, int amount)
         {
+           
             DepositFunds(accountHolder, amount);
             Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
             Console.WriteLine(Constants.thankYou);
-            UpdateJson(accountHolder);
+            return accountHolder;
         }
 
-        public void PerformWithdraw(AccountHolder accountHolder, int amount)
+        public AccountHolder PerformWithdraw(AccountHolder accountHolder, int amount)
         {
             WithdrawFunds(accountHolder, amount);
             Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
             Console.WriteLine(Constants.thankYou);
-            UpdateJson(accountHolder);
+            return accountHolder;
         }
 
-        public void UpdateJson(AccountHolder accountHolder)
+        public void UpdateJson(List<AccountHolder> accountHolderList)
         {
-            
-            string updatedJson = JsonConvert.SerializeObject(accountHolder);
-            File.WriteAllText(@"C:\json\account.json", updatedJson);
-            
+            string updatedJson = JsonConvert.SerializeObject(accountHolderList);
+            File.WriteAllText(@"C:\json\account.json", updatedJson);  
         }
     }
 }

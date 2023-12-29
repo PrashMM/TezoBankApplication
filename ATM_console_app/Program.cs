@@ -131,13 +131,27 @@ class Program
                              break;
 
                         case ATMOperation.Deposit:
-                             var amountToDeposit = accountDetailsService.GetValidAmount();
-                             accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);                            
-                             break;
+
+                            accountHolderDetailsList.Remove(accountHolder);
+
+                            var amountToDeposit = accountDetailsService.GetValidAmount();
+                            var holder1 =   accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
+
+                            accountHolderDetailsList.Add(holder1);
+                            accountDetailsService.UpdateJson(accountHolderDetailsList);
+
+                            break;
 
                         case ATMOperation.Withdraw:
+
+                            accountHolderDetailsList.Remove(accountHolder);
+
                             var amountToWithdraw = accountDetailsService.ValidateWithdrawAmount(accountNumber);
-                            accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
+                            var holder2=  accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
+
+                            accountHolderDetailsList.Add(holder2);
+                            accountDetailsService.UpdateJson(accountHolderDetailsList);
+
                             break;
 
                         case ATMOperation.EditAccountDetails:
@@ -147,16 +161,28 @@ class Program
                             switch (UpdateDetailsByInput(updateInput))
                             {
                                 case UpdateDetails.UpdateName:
+                                    accountHolderDetailsList.Remove(accountHolder);
+
                                     Console.WriteLine(Constants.enterNameToUpdate);
                                     var oldName = accountHolder.CustomerDetails.FullName;
-                                    accountDetailsService.UpdateName(accountHolder);
+                                    var newAccount =  accountDetailsService.UpdateName(accountHolder);
+
+                                    accountHolderDetailsList.Add(newAccount);
+                                    accountDetailsService.UpdateJson(accountHolderDetailsList);
+
                                     Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
                                     break;
 
                                 case UpdateDetails.UpdateAddress:
+                                    accountHolderDetailsList.Remove(accountHolder);
+
                                     Console.WriteLine(Constants.enterAddressToUpdate);
                                     var oldAddress = accountHolder.AddressDetails.AddressName;
-                                    accountDetailsService.UpdateAddress(accountHolder);
+                                    var newAccount2 =  accountDetailsService.UpdateAddress(accountHolder);
+
+                                    accountHolderDetailsList.Add(newAccount2);
+                                    accountDetailsService.UpdateJson(accountHolderDetailsList);
+
                                     Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.AddressDetails.AddressName}");
                                     break;
                             }
@@ -242,7 +268,7 @@ class Program
                 return UpdateDetails.UpdateName;
             case 2:
                 return UpdateDetails.UpdateAddress;
-          default:
+            default:
                 return default;
 
         }
