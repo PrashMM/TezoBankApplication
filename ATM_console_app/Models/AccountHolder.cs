@@ -18,7 +18,7 @@ namespace ATM_console_app.Models
         {
             if (string.IsNullOrWhiteSpace(fullName))
             {
-                throw new ArgumentException("Full name cannot be null or empty.", nameof(fullName));
+                throw new ArgumentException(Constants.UnableToCreateAccountNumber, nameof(fullName));
             }
 
             CustomerDetails = new CustomerModel
@@ -39,23 +39,6 @@ namespace ATM_console_app.Models
             {
                 AddressName = addressName
             };
-        }
-
-        public static void SaveToFile(List<AccountHolder> accountHolders, string filePath)
-        {
-            string json = JsonConvert.SerializeObject(accountHolders, Formatting.Indented);
-            File.WriteAllText(filePath, json);
-        }
-
-        public static List<AccountHolder> LoadFromFile(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                string json = File.ReadAllText(filePath);
-                return JsonConvert.DeserializeObject<List<AccountHolder>>(json);
-            }
-
-            return new List<AccountHolder>();
         }
     }
 }

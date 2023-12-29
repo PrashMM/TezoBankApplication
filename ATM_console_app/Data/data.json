@@ -1,5 +1,4 @@
-{
-  [
+[
     {
       "customerDetails": {
         "fullName": "Mr/Mrs Kiran K",
@@ -30,5 +29,4 @@
         "addressName": "HYD, 234"
       }
     }
-  ]
-}
+ ]

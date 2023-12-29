@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace ATM_console_app.Data
 {
-     class AccountData
+    public class AccountData
     {
-           public static List<AccountHolder> AccountHoldersDetails { get; set; } = new List<AccountHolder>();
+       public static List<AccountHolder> AccountHoldersDetails { get; set; } = new List<AccountHolder>();
     }
 }

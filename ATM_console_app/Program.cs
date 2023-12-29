@@ -1,6 +1,7 @@
 ﻿using ATM_console_app.Data;
 using ATM_console_app.Models;
 using ATM_console_app.Services;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
@@ -9,27 +10,20 @@ class Program
 {
     private static AccountDetailsService accountDetailsService;
     private static UserInputOutput userInputOutputService;
+    private static List<AccountHolder> accountHolderDetailsList;
+
 
     public static void Main()
     {
-        InitializeServices();
+       InitializeServices();
         WelcomeMenu();
-
-        string filePath = "data.json";
-
-        // Load existing account data (if any)
-        List<AccountHolder> accountHolders = AccountHolder.LoadFromFile(filePath);
-
-        // Add new account data or perform operations on existing data
-
-        // Save the updated data back to the JSON file
-        AccountHolder.SaveToFile(accountHolders, filePath);
     }
 
     private static void InitializeServices()
     {
         accountDetailsService = new AccountDetailsService();
         userInputOutputService = new UserInputOutput();
+        accountHolderDetailsList = new List<AccountHolder>();
     }
 
     public static void WelcomeMenu()
@@ -65,14 +59,35 @@ class Program
                         if (dataIsCorrect)
                         {
                             accountDetailsService.AddHolderDetails(accountHolderDetails);
+                      
+                         accountHolderDetailsList.Where(e => e.AccountDetails.AccountNumber == accountHolderDetails.AccountDetails.AccountNumber);
+                           if (accountHolderDetailsList != null)
+                           {
+                              accountHolderDetailsList.Add(accountHolderDetails);
+                           }
+                        
+                            string JSONresult = JsonConvert.SerializeObject(accountHolderDetailsList);
+                            string path = @"C:\json\account.json";
+
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                                using (var tw = new StreamWriter(path, true))
+                                {
+                                    tw.WriteLine(JSONresult.ToString());
+                                    tw.Close();
+                                }
+                            }
+                            else if (!File.Exists(path))
+                            {
+                                using (var tw = new StreamWriter(path, true))
+                                {
+                                    tw.WriteLine(JSONresult.ToString());
+                                    tw.Close();
+                                }
+                            }
                             AccountOperation();
                         }
-                        else
-                        {
-                            break;
-                        }
-
-
                         break;
 
                     case MainMenu.Exit:
@@ -95,11 +110,9 @@ class Program
     private static void AccountOperation()
     {
         Console.WriteLine(Constants.seperateLine);
-     // accountHolder =    userInputOutputService.AskForAccountNumber();
         Console.WriteLine(Constants.enterAccountNumber);
         var accountNumber = Console.ReadLine();
         var accountHolder = accountDetailsService.GetAccountHolderByAccNumber(accountNumber);
-        //var accountHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountDetails.AccountNumber.Equals(accountNumber));
 
         while (true)
          {
@@ -123,9 +136,9 @@ class Program
                              break;
 
                         case ATMOperation.Withdraw:
-                             var amountToWithdraw = accountDetailsService.ValidateWithdrawAmount(accountNumber);
-                             accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
-                             break;
+                            var amountToWithdraw = accountDetailsService.ValidateWithdrawAmount(accountNumber);
+                            accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
+                            break;
 
                         case ATMOperation.EditAccountDetails:
                             Console.WriteLine(Constants.editAccountDetails);
@@ -142,9 +155,9 @@ class Program
 
                                 case UpdateDetails.UpdateAddress:
                                     Console.WriteLine(Constants.enterAddressToUpdate);
-                                    var oldAddress = accountHolder.CustomerDetails.Address;
+                                    var oldAddress = accountHolder.AddressDetails.AddressName;
                                     accountDetailsService.UpdateAddress(accountHolder);
-                                    Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.Address}");
+                                    Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.AddressDetails.AddressName}");
                                     break;
                             }
                             break;
@@ -161,7 +174,6 @@ class Program
                             Console.WriteLine(Constants.thankYou);
                             return;
                     }
-                    AccountOperation();
                 }
                 catch (Exception e)
                 {
@@ -171,16 +183,16 @@ class Program
             else {
                 
                 Console.WriteLine(Constants.accountNotFound);
-                return;
+                break;
        }
-               
+            AccountOperation();
 
 
-     }
-
+    }
         
+
        
-        }
+ }
 
 
     public static MainMenu GetMainMenuByInput(int value)

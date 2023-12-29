@@ -16,7 +16,6 @@ namespace ATM_console_app.Models
             set { Name = $"Mr/Mrs {value}"; }
         }
         public string MobileNumber { get; set; }
-        public string Address { get; set; }
         public string AadharNumber { get; set; }
     }
 

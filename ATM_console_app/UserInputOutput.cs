@@ -19,7 +19,7 @@ using System.Threading.Tasks;
         public void ShowAccountDetails(AccountHolder holder)
         {
             Console.WriteLine(Constants.checkAllDetails);
-            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Address: {holder.CustomerDetails.Address} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
+            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Address: {holder.AddressDetails.AddressName} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
             Console.WriteLine(Constants.ifCorrectPressYToProcced);
         }
 

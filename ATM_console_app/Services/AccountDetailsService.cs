@@ -1,7 +1,9 @@
 ﻿using ATM_console_app.Data;
 using ATM_console_app.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,18 +14,9 @@ namespace ATM_console_app.Services
 
     class AccountDetailsService
     {
-        private static AccountDetailsService accountDetailsService;
-        private static UserInputOutput userInputOutputService;
-
-        private static void InitializeServices()
-        {
-            accountDetailsService = new AccountDetailsService();
-            userInputOutputService = new UserInputOutput();
-        }
-
         public void AddHolderDetails(AccountHolder holder)
         {
-            AccountData.AccountHoldersDetails.Add(holder);
+            AccountData.AccountHoldersDetails.Add(holder);     
         }
 
         public void DepositFunds(AccountHolder holder, double creditAmount)
@@ -41,12 +34,14 @@ namespace ATM_console_app.Services
         {
             var newName = Console.ReadLine();
             accountHolder.CustomerDetails.FullName = newName ?? "";
+            UpdateJson(accountHolder);
         }
 
         public void UpdateAddress(AccountHolder accountHolder)
         {
             var newAddress = Console.ReadLine();
-            accountHolder.CustomerDetails.Address = newAddress ?? "";
+            accountHolder.AddressDetails.AddressName = newAddress ?? "";
+            UpdateJson(accountHolder);
         }
 
         public AccountHolder GetAccountHolderByAccNumber(String accountNum) 
@@ -58,7 +53,6 @@ namespace ATM_console_app.Services
 
         public int GetValidAmount()
         {
-
             Console.WriteLine(Constants.enterAmountToCredit);
             if (int.TryParse(Console.ReadLine(), out var amount))
             {
@@ -69,7 +63,6 @@ namespace ATM_console_app.Services
                  Console.WriteLine(Constants.enterValidAmount);
                  return 0;
             }
-
         }
 
         public int ValidateWithdrawAmount(string accountNum)
@@ -92,6 +85,7 @@ namespace ATM_console_app.Services
             DepositFunds(accountHolder, amount);
             Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
             Console.WriteLine(Constants.thankYou);
+            UpdateJson(accountHolder);
         }
 
         public void PerformWithdraw(AccountHolder accountHolder, int amount)
@@ -99,7 +93,15 @@ namespace ATM_console_app.Services
             WithdrawFunds(accountHolder, amount);
             Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
             Console.WriteLine(Constants.thankYou);
+            UpdateJson(accountHolder);
         }
 
+        public void UpdateJson(AccountHolder accountHolder)
+        {
+            
+            string updatedJson = JsonConvert.SerializeObject(accountHolder);
+            File.WriteAllText(@"C:\json\account.json", updatedJson);
+            
+        }
     }
 }
