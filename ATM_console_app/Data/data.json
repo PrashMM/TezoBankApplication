@@ -1,0 +1,34 @@
+{
+  [
+    {
+      "customerDetails": {
+        "fullName": "Mr/Mrs Kiran K",
+        "mobileNumber": "1234567890",
+        "aadharNumber": "123456789012"
+      },
+      "accountDetails": {
+        "accountNumber": "ACC123",
+        "initialAmount": 1000.00,
+        "balance": 1000.00
+      },
+      "addressDetails": {
+        "addressName": "BNG, 123"
+      }
+    },
+    {
+      "customerDetails": {
+        "fullName": "Mr/Mrs Tezo",
+        "mobileNumber": "9876543210",
+        "aadharNumber": "987654321098"
+      },
+      "accountDetails": {
+        "accountNumber": "ACC456",
+        "initialAmount": 500.50,
+        "balance": 500.50
+      },
+      "addressDetails": {
+        "addressName": "HYD, 234"
+      }
+    }
+  ]
+}

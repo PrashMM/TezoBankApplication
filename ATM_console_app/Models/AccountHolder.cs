@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,48 +7,55 @@ using System.Threading.Tasks;
 
 namespace ATM_console_app.Models
 {
-    class Customer
-    {
-        private string name;
 
-        public string FullName
+    public class AccountHolder
+    {
+        public CustomerModel CustomerDetails { get; set; }
+        public AccountModel AccountDetails { get; set; }
+        public AddressModel AddressDetails { get; set; }
+
+        public AccountHolder( string fullName, string mobileNumber, string addressName, string aadharNumber, string accountNumber, double initialAmount, double balance)
         {
-            get { return name; }
-            set { name = "Mr/Mrs. " + value; }
-        }
-        public string MobileNumber { get; set; }
-        public string Address { get; set; }
-        public string AadharNumber { get; set; }
-    }
+            if (string.IsNullOrWhiteSpace(fullName))
+            {
+                throw new ArgumentException("Full name cannot be null or empty.", nameof(fullName));
+            }
 
-    class Account
-    {
-        public string AccountNumber { get; set; }
-        public double InitialAmount { get; set; }
-        public double Balance { get; set; }
-    }
-
-    class AccountHolder
-    {
-        public Customer CustomerDetails { get; set; }
-        public Account AccountDetails { get; set; }
-
-        public AccountHolder(string fullName, string mobileNumber, string address, string aadharNumber, string accountNumber, double initialAmount, double balance)
-        {
-            CustomerDetails = new Customer
+            CustomerDetails = new CustomerModel
             {
                 FullName = fullName,
                 MobileNumber = mobileNumber,
-                Address = address,
                 AadharNumber = aadharNumber
             };
 
-            AccountDetails = new Account
+            AccountDetails = new AccountModel
             {
                 AccountNumber = accountNumber,
                 InitialAmount = initialAmount,
                 Balance = balance
             };
+
+            AddressDetails = new AddressModel
+            {
+                AddressName = addressName
+            };
+        }
+
+        public static void SaveToFile(List<AccountHolder> accountHolders, string filePath)
+        {
+            string json = JsonConvert.SerializeObject(accountHolders, Formatting.Indented);
+            File.WriteAllText(filePath, json);
+        }
+
+        public static List<AccountHolder> LoadFromFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                return JsonConvert.DeserializeObject<List<AccountHolder>>(json);
+            }
+
+            return new List<AccountHolder>();
         }
     }
 }

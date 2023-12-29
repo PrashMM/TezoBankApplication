@@ -8,9 +8,18 @@ using System.Threading.Tasks;
 
 namespace ATM_console_app.Services
 {
-    
+   
+
     class AccountDetailsService
     {
+        private static AccountDetailsService accountDetailsService;
+        private static UserInputOutput userInputOutputService;
+
+        private static void InitializeServices()
+        {
+            accountDetailsService = new AccountDetailsService();
+            userInputOutputService = new UserInputOutput();
+        }
 
         public void AddHolderDetails(AccountHolder holder)
         {
@@ -26,6 +35,70 @@ namespace ATM_console_app.Services
         public void WithdrawFunds(AccountHolder holder, int debitAmount)
         {
              holder.AccountDetails.Balance -= debitAmount;
+        }
+
+        public void UpdateName(AccountHolder accountHolder)
+        {
+            var newName = Console.ReadLine();
+            accountHolder.CustomerDetails.FullName = newName ?? "";
+        }
+
+        public void UpdateAddress(AccountHolder accountHolder)
+        {
+            var newAddress = Console.ReadLine();
+            accountHolder.CustomerDetails.Address = newAddress ?? "";
+        }
+
+        public AccountHolder GetAccountHolderByAccNumber(String accountNum) 
+        {
+            var accountHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountDetails.AccountNumber.Equals(accountNum));
+            return accountHolder;
+        }
+
+
+        public int GetValidAmount()
+        {
+
+            Console.WriteLine(Constants.enterAmountToCredit);
+            if (int.TryParse(Console.ReadLine(), out var amount))
+            {
+                return amount;
+            }
+            else
+            {
+                 Console.WriteLine(Constants.enterValidAmount);
+                 return 0;
+            }
+
+        }
+
+        public int ValidateWithdrawAmount(string accountNum)
+        {
+            var accountHolder = GetAccountHolderByAccNumber(accountNum);
+            Console.WriteLine(Constants.enterAmountToDebit);
+            if (int.TryParse(Console.ReadLine(), out var amount))
+            {
+                return amount > 0 && accountHolder.AccountDetails.Balance > amount ? amount : 0;
+            }
+            else
+            {
+                Console.WriteLine(Constants.enterValidAmount);
+                return 0;
+            }
+        }
+
+        public void PerformDeposit(AccountHolder accountHolder, int amount)
+        {
+            DepositFunds(accountHolder, amount);
+            Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
+            Console.WriteLine(Constants.thankYou);
+        }
+
+        public void PerformWithdraw(AccountHolder accountHolder, int amount)
+        {
+            WithdrawFunds(accountHolder, amount);
+            Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
+            Console.WriteLine(Constants.thankYou);
         }
 
     }

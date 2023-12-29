@@ -1,4 +1,5 @@
 ﻿using ATM_console_app.Models;
+using ATM_console_app.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
             ShowAccountDetails(holder);
             var dataIsCorrect = Console.ReadLine();
             Console.WriteLine(Constants.seperateLine);
-            return (dataIsCorrect == "Y" || dataIsCorrect == "y");
+            return dataIsCorrect.ToLower().Equals("y");
         }
 
         public void ShowAccountDetails(AccountHolder holder)
@@ -25,38 +26,21 @@ using System.Threading.Tasks;
    
         public string GenerateAccountNumber(AccountHolder holder)
         {
-            if (!string.IsNullOrEmpty(holder.CustomerDetails.FullName))
-           {
-            holder.AccountDetails.AccountNumber = $"ATM0{holder.CustomerDetails.FullName[5]}{holder.CustomerDetails.MobileNumber}";
+            holder.AccountDetails.AccountNumber = $"ATM0{holder.CustomerDetails.FullName[7]}{holder.CustomerDetails.MobileNumber}";
             return holder.AccountDetails.AccountNumber;
-           }
-             else
-          {
-            Console.WriteLine(Constants.UnableToCreateAccountNumber);
-            return null;
-          }
         }
 
 
 
 
-    public void updateName(AccountHolder accountHolder)
-    {
-        var newName = Console.ReadLine();
-        accountHolder.CustomerDetails.FullName = newName ?? "";
-    }
-
-    public void updateAddress(AccountHolder accountHolder)
-    {
-        var newAddress = Console.ReadLine();
-        accountHolder.CustomerDetails.Address = newAddress ?? "";
-    }
-
+    
     public void HelpService()
     {
         Console.WriteLine(Constants.writeEmailandQuery);
         Console.ReadLine();
         Console.WriteLine(Constants.teamWillReachOutToYou);
     }
+
+    
 }
 
