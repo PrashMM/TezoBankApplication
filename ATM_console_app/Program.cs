@@ -130,7 +130,7 @@ class Program
 
                             accountHolderDetailsList.Add(holderAfterDeposit);
                             jsonFileService.UpdateJson(accountHolderDetailsList);
-
+                            accountHolder.LastModifiedOn = DateTime.UtcNow;
                             break;
 
                         case ATMOperation.Withdraw:
@@ -142,7 +142,7 @@ class Program
 
                             accountHolderDetailsList.Add(holderAfterWithdraw);
                             jsonFileService.UpdateJson(accountHolderDetailsList);
-
+                            accountHolder.LastModifiedOn = DateTime.UtcNow;
                             break;
 
                         case ATMOperation.EditAccountDetails:
@@ -163,6 +163,7 @@ class Program
                                     jsonFileService.UpdateJson(accountHolderDetailsList);
 
                                     Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
+                                    accountHolder.LastModifiedOn = DateTime.UtcNow;
                                     break;
 
                                 case UpdateDetails.UpdateAddress:
@@ -177,6 +178,7 @@ class Program
                                     jsonFileService.UpdateJson(accountHolderDetailsList);
 
                                     Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.AddressDetails.Location}");
+                                    accountHolder.LastModifiedOn = DateTime.UtcNow;
                                     break;
                             }
                             break;
@@ -192,7 +194,6 @@ class Program
                         case ATMOperation.HoldersList:
                             accountDetailsService.DisplayAllAccountHolders();
                             break;
-
 
                         case ATMOperation.Exit:
                             Console.WriteLine(Constants.thankYou);

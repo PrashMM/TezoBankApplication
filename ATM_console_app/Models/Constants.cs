@@ -12,7 +12,7 @@
         public const string enterPincode = "*-* Enter Pincode *-*";
         public const string enterAadharCardNumber = "*-* Enter your Aadhar Card Number *-*";
         public const string enterAccountNumber = "*-* Enter the Account Number *-*";
-        public const string accountOperations = "--> Press 1 to Check Balance,\n--> Press 2 to Credit amount to your account,\n--> Press 3 to Debit amount from your account,\n--> Press 4 to Edit account details\n--> Press 5 to Help \n--> Press 6 to To Create another account \n --> Press 7 to Display all Account holders details \n--> Press 8 to Exit";
+        public const string accountOperations = "--> Press 1 to Check Balance,\n--> Press 2 to Credit amount to your account,\n--> Press 3 to Debit amount from your account,\n--> Press 4 to Edit account details\n--> Press 5 to Help \n--> Press 6 to To Create another account \n--> Press 7 to Display all Account holders details \n--> Press 8 to Exit";
         public const string checkAllDetails = "Here are the Details you entered. Please check all the Details correct or Not ";
         public const string ifCorrectPressYToProcced = "<-> <-> if everything is correct, Type 'Y' to proceed <-> <->";
         public const string checkAccountBalance = "Check Your Account Balance Here";

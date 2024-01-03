@@ -1,6 +1,5 @@
 ﻿using ATM_console_app.Data;
 using ATM_console_app.Models;
-using Newtonsoft.Json;
 
 namespace ATM_console_app.Services
 {
@@ -69,6 +68,8 @@ namespace ATM_console_app.Services
                 Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
                 Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
                 Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
+                Console.WriteLine($"Created at: {accountHolder.CreatedOn}");
+                Console.WriteLine($"Last Modified at : {accountHolder.LastModifiedOn}");
                 Console.WriteLine(Constants.seperateLine);
                 Console.WriteLine();
             }
