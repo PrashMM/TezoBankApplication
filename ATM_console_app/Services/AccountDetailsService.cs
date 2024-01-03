@@ -1,16 +1,9 @@
 ﻿using ATM_console_app.Data;
 using ATM_console_app.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATM_console_app.Services
 {
-   
 
     class AccountDetailsService
     {
@@ -30,17 +23,15 @@ namespace ATM_console_app.Services
              holder.AccountDetails.Balance -= debitAmount;
         }
 
-        public AccountHolder UpdateName(AccountHolder accountHolder)
+        public AccountHolder UpdateName(AccountHolder accountHolder, string newName)
         {
-            var newName = Console.ReadLine();
             accountHolder.CustomerDetails.FullName = newName ?? "";
             return accountHolder;
         }
 
-        public AccountHolder UpdateAddress(AccountHolder accountHolder)
+        public AccountHolder UpdateAddress(AccountHolder accountHolder, string newAddress)
         {
-            var newAddress = Console.ReadLine();
-            accountHolder.AddressDetails.AddressName = newAddress ?? "";
+            accountHolder.CustomerDetails.AddressDetails.Location = newAddress ?? "";
             return accountHolder;
         }
 
@@ -50,35 +41,6 @@ namespace ATM_console_app.Services
             return accountHolder;
         }
 
-
-        public int GetValidAmount()
-        {
-            Console.WriteLine(Constants.enterAmountToCredit);
-            if (int.TryParse(Console.ReadLine(), out var amount))
-            {
-                return amount;
-            }
-            else
-            {
-                 Console.WriteLine(Constants.enterValidAmount);
-                 return 0;
-            }
-        }
-
-        public int ValidateWithdrawAmount(string accountNum)
-        {
-            var accountHolder = GetAccountHolderByAccNumber(accountNum);
-            Console.WriteLine(Constants.enterAmountToDebit);
-            if (int.TryParse(Console.ReadLine(), out var amount))
-            {
-                return amount > 0 && accountHolder.AccountDetails.Balance > amount ? amount : 0;
-            }
-            else
-            {
-                Console.WriteLine(Constants.enterValidAmount);
-                return 0;
-            }
-        }
 
         public AccountHolder PerformDeposit(AccountHolder accountHolder, int amount)
         {
@@ -97,10 +59,19 @@ namespace ATM_console_app.Services
             return accountHolder;
         }
 
-        public void UpdateJson(List<AccountHolder> accountHolderList)
+        public void DisplayAllAccountHolders()
         {
-            string updatedJson = JsonConvert.SerializeObject(accountHolderList);
-            File.WriteAllText(@"C:\json\account.json", updatedJson);  
+            Console.WriteLine("Account Holders : ");
+            foreach (var accountHolder in AccountData.AccountHoldersDetails)
+            {
+                Console.WriteLine(Constants.seperateLine);
+                Console.WriteLine($"Account Number: {accountHolder.AccountDetails.AccountNumber}");
+                Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
+                Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
+                Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
+                Console.WriteLine(Constants.seperateLine);
+                Console.WriteLine();
+            }
         }
     }
 }

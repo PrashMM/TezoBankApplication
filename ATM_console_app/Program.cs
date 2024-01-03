@@ -1,16 +1,13 @@
-﻿using ATM_console_app.Data;
-using ATM_console_app.Models;
+﻿using ATM_console_app.Models;
 using ATM_console_app.Services;
 using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.Design;
 
 class Program
 {
     private static AccountDetailsService accountDetailsService;
     private static UserInputOutput userInputOutputService;
     private static List<AccountHolder> accountHolderDetailsList;
+    private static JsonFileService jsonFileService;
 
 
     public static void Main()
@@ -24,6 +21,7 @@ class Program
         accountDetailsService = new AccountDetailsService();
         userInputOutputService = new UserInputOutput();
         accountHolderDetailsList = new List<AccountHolder>();
+        jsonFileService = new JsonFileService();
     }
 
     public static void WelcomeMenu()
@@ -46,14 +44,16 @@ class Program
                         var fullName = Console.ReadLine();
                         Console.WriteLine(Constants.enterMobileNumber);
                         var mobileNumber = Console.ReadLine();
-                        Console.WriteLine(Constants.enterAddress);
+                        Console.WriteLine(Constants.enterLocation);
                         var address = Console.ReadLine();
+                        Console.WriteLine(Constants.enterPincode);
+                        var pinCode = Console.ReadLine();
                         Console.WriteLine(Constants.enterAadharCardNumber);
                         var aadharNumber = Console.ReadLine();
 
                         Console.WriteLine(Constants.seperateLine);
 
-                        var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, aadharNumber, "", initialAmount: 1000, balance: 1000);
+                        var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
                         var dataIsCorrect = userInputOutputService.IsAccountDetailsCorrect(accountHolderDetails);
 
                         if (dataIsCorrect)
@@ -65,27 +65,18 @@ class Program
                            {
                               accountHolderDetailsList.Add(accountHolderDetails);
                            }
-                        
+
+
                             string JSONresult = JsonConvert.SerializeObject(accountHolderDetailsList);
                             string path = @"C:\json\account.json";
 
+                            
                             if (File.Exists(path))
                             {
-                                File.Delete(path);
-                                using (var tw = new StreamWriter(path, true))
-                                {
-                                    tw.WriteLine(JSONresult.ToString());
-                                    tw.Close();
-                                }
+                              File.Delete(path);
                             }
-                            else if (!File.Exists(path))
-                            {
-                                using (var tw = new StreamWriter(path, true))
-                                {
-                                    tw.WriteLine(JSONresult.ToString());
-                                    tw.Close();
-                                }
-                            }
+                            File.WriteAllText(path, JSONresult);
+
                             AccountOperation();
                         }
                         break;
@@ -134,11 +125,11 @@ class Program
 
                             accountHolderDetailsList.Remove(accountHolder);
 
-                            var amountToDeposit = accountDetailsService.GetValidAmount();
+                            var amountToDeposit = userInputOutputService.GetValidAmount();
                             var holderAfterDeposit =   accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
 
                             accountHolderDetailsList.Add(holderAfterDeposit);
-                            accountDetailsService.UpdateJson(accountHolderDetailsList);
+                            jsonFileService.UpdateJson(accountHolderDetailsList);
 
                             break;
 
@@ -146,11 +137,11 @@ class Program
 
                             accountHolderDetailsList.Remove(accountHolder);
 
-                            var amountToWithdraw = accountDetailsService.ValidateWithdrawAmount(accountNumber);
+                            var amountToWithdraw = userInputOutputService.ValidateWithdrawAmount(accountNumber);
                             var holderAfterWithdraw=  accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
 
                             accountHolderDetailsList.Add(holderAfterWithdraw);
-                            accountDetailsService.UpdateJson(accountHolderDetailsList);
+                            jsonFileService.UpdateJson(accountHolderDetailsList);
 
                             break;
 
@@ -165,10 +156,11 @@ class Program
 
                                     Console.WriteLine(Constants.enterNameToUpdate);
                                     var oldName = accountHolder.CustomerDetails.FullName;
-                                    var holderAfterUpdateName =  accountDetailsService.UpdateName(accountHolder);
+                                    var newName = Console.ReadLine();
+                                    var holderAfterUpdateName =  accountDetailsService.UpdateName(accountHolder,newName);
 
                                     accountHolderDetailsList.Add(holderAfterUpdateName);
-                                    accountDetailsService.UpdateJson(accountHolderDetailsList);
+                                    jsonFileService.UpdateJson(accountHolderDetailsList);
 
                                     Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
                                     break;
@@ -177,13 +169,14 @@ class Program
                                     accountHolderDetailsList.Remove(accountHolder);
 
                                     Console.WriteLine(Constants.enterAddressToUpdate);
-                                    var oldAddress = accountHolder.AddressDetails.AddressName;
-                                    var holderAfterUpdateAddress =  accountDetailsService.UpdateAddress(accountHolder);
+                                    var oldAddress = accountHolder.CustomerDetails.AddressDetails.Location;
+                                    var newAddress = Console.ReadLine();
+                                    var holderAfterUpdateAddress =  accountDetailsService.UpdateAddress(accountHolder, newAddress);
 
                                     accountHolderDetailsList.Add(holderAfterUpdateAddress);
-                                    accountDetailsService.UpdateJson(accountHolderDetailsList);
+                                    jsonFileService.UpdateJson(accountHolderDetailsList);
 
-                                    Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.AddressDetails.AddressName}");
+                                    Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.AddressDetails.Location}");
                                     break;
                             }
                             break;
@@ -195,6 +188,11 @@ class Program
                         case ATMOperation.OpenAccount:
                             WelcomeMenu();
                             break;
+
+                        case ATMOperation.HoldersList:
+                            accountDetailsService.DisplayAllAccountHolders();
+                            break;
+
 
                         case ATMOperation.Exit:
                             Console.WriteLine(Constants.thankYou);
@@ -252,7 +250,9 @@ class Program
             case 6:
                 return ATMOperation.OpenAccount;
             case 7:
-                return ATMOperation.Exit;
+                return ATMOperation.HoldersList;
+            case 8:
+                return ATMOperation.HoldersList;
             default:
                 return default;
         }

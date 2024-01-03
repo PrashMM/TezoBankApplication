@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ATM_console_app.Models
+﻿namespace ATM_console_app.Models
 {
     public enum MainMenu
     {
@@ -20,6 +14,7 @@ namespace ATM_console_app.Models
         EditAccountDetails,
         TakeHelp,
         OpenAccount,
+        HoldersList,
         Exit
     }
 
