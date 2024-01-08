@@ -107,7 +107,7 @@ class Program
                     {
                         case ATMOperation.CheckBalance:
                              Console.WriteLine(Constants.checkAccountBalance);
-                             UserInputOutput.printAmount(accountHolder);
+                             UserInputOutput.PrintAmount(accountHolder);
                              break;
 
                         case ATMOperation.Deposit:
@@ -116,6 +116,7 @@ class Program
 
                             var amountToDeposit = userInputOutputService.GetValidAmount();
                             var holderAfterDeposit =   accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
+                            UserInputOutput.PrintAmount(accountHolder);
 
                             accountHolderDetailsList.Add(holderAfterDeposit);
                             jsonFileService.UpdateJson(accountHolderDetailsList);
@@ -128,6 +129,7 @@ class Program
 
                             var amountToWithdraw = userInputOutputService.ValidateWithdrawAmount(accountNumber);
                             var holderAfterWithdraw=  accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
+                            UserInputOutput.PrintAmount(accountHolder);
 
                             accountHolderDetailsList.Add(holderAfterWithdraw);
                             jsonFileService.UpdateJson(accountHolderDetailsList);
@@ -202,8 +204,7 @@ class Program
             AccountOperation();
 
 
-    }
-        
+    }        
 
        
  }

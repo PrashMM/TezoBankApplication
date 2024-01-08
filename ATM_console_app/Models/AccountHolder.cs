@@ -26,7 +26,7 @@
                     Location = addressName,
                     Pincode = pincode
                 }
-                  
+
             };
 
             AccountDetails = new Account

@@ -20,13 +20,7 @@ namespace ATM_console_app.Services
             string JSONresult = JsonConvert.SerializeObject(accountHolderDetailsList);
             string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string filePath = Path.Combine(folderPath, "account.json");
-
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
             File.WriteAllText(filePath, JSONresult);
-
         }
     }
 }

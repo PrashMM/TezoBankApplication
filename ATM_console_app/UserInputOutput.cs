@@ -25,8 +25,7 @@ class UserInputOutput
             Console.WriteLine(Constants.ifCorrectPressYToProcced);
         }
 
-   
-        public string GenerateAccountNumber(AccountHolder holder)
+         public string GenerateAccountNumber(AccountHolder holder)
         {
             var uniqueValue = holder.CustomerDetails.MobileNumber.ToString();
             holder.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[7]}{uniqueValue[0]}{uniqueValue[1]}";
@@ -87,7 +86,7 @@ class UserInputOutput
         }
     }
 
-    public static void printAmount(AccountHolder accountHolder)
+    public static void PrintAmount(AccountHolder accountHolder)
     {
         Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
         Console.WriteLine(Constants.thankYou);

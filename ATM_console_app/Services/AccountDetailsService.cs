@@ -26,22 +26,19 @@ namespace ATM_console_app.Services
 
         public AccountHolder GetAccountHolderByAccNumber(String accountNum) 
         {
-            var accountHolder = AccountData.AccountHoldersDetails.Find(e => e.AccountDetails.AccountNumber.Equals(accountNum));
-            return accountHolder;
+            return AccountData.AccountHoldersDetails.Find(e => e.AccountDetails.AccountNumber.Equals(accountNum));
         }
 
 
         public AccountHolder PerformDeposit(AccountHolder accountHolder, int amount)
         {
             accountHolder.AccountDetails.Balance += amount;
-            UserInputOutput.printAmount(accountHolder);
             return accountHolder;
         }
 
         public AccountHolder PerformWithdraw(AccountHolder accountHolder, int amount)
         {
             accountHolder.AccountDetails.Balance -= amount;
-            UserInputOutput.printAmount(accountHolder);
             return accountHolder;
         }
 
