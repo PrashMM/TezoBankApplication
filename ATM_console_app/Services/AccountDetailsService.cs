@@ -6,20 +6,10 @@ namespace ATM_console_app.Services
 
     class AccountDetailsService
     {
+           
         public void AddHolderDetails(AccountHolder holder)
         {
             AccountData.AccountHoldersDetails.Add(holder);     
-        }
-
-        public void DepositFunds(AccountHolder holder, double creditAmount)
-        {
-            holder.AccountDetails.Balance += creditAmount;
-        }
-
-
-        public void WithdrawFunds(AccountHolder holder, int debitAmount)
-        {
-             holder.AccountDetails.Balance -= debitAmount;
         }
 
         public AccountHolder UpdateName(AccountHolder accountHolder, string newName)
@@ -43,36 +33,17 @@ namespace ATM_console_app.Services
 
         public AccountHolder PerformDeposit(AccountHolder accountHolder, int amount)
         {
-           
-            DepositFunds(accountHolder, amount);
-            Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
-            Console.WriteLine(Constants.thankYou);
+            accountHolder.AccountDetails.Balance += amount;
+            UserInputOutput.printAmount(accountHolder);
             return accountHolder;
         }
 
         public AccountHolder PerformWithdraw(AccountHolder accountHolder, int amount)
         {
-            WithdrawFunds(accountHolder, amount);
-            Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
-            Console.WriteLine(Constants.thankYou);
+            accountHolder.AccountDetails.Balance -= amount;
+            UserInputOutput.printAmount(accountHolder);
             return accountHolder;
         }
 
-        public void DisplayAllAccountHolders()
-        {
-            Console.WriteLine("Account Holders : ");
-            foreach (var accountHolder in AccountData.AccountHoldersDetails)
-            {
-                Console.WriteLine(Constants.seperateLine);
-                Console.WriteLine($"Account Number: {accountHolder.AccountDetails.AccountNumber}");
-                Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
-                Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
-                Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
-                Console.WriteLine($"Created at: {accountHolder.CreatedOn}");
-                Console.WriteLine($"Last Modified at : {accountHolder.LastModifiedOn}");
-                Console.WriteLine(Constants.seperateLine);
-                Console.WriteLine();
-            }
-        }
     }
 }

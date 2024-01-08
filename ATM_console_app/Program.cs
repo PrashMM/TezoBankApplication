@@ -65,17 +65,7 @@ class Program
                            {
                               accountHolderDetailsList.Add(accountHolderDetails);
                            }
-
-
-                            string JSONresult = JsonConvert.SerializeObject(accountHolderDetailsList);
-                            string path = @"C:\json\account.json";
-
-                            
-                            if (File.Exists(path))
-                            {
-                              File.Delete(path);
-                            }
-                            File.WriteAllText(path, JSONresult);
+                            jsonFileService.CreateJSONDocument(accountHolderDetailsList);
 
                             AccountOperation();
                         }
@@ -192,7 +182,7 @@ class Program
                             break;
 
                         case ATMOperation.HoldersList:
-                            accountDetailsService.DisplayAllAccountHolders();
+                            userInputOutputService.DisplayAllAccountHolders();
                             break;
 
                         case ATMOperation.Exit:

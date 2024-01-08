@@ -1,8 +1,9 @@
-﻿using ATM_console_app.Models;
+﻿using ATM_console_app.Data;
+using ATM_console_app.Models;
 using ATM_console_app.Services;
 
 class UserInputOutput
-    {
+   {
     public AccountDetailsService accountDetailsService;
 
     public UserInputOutput()
@@ -69,6 +70,27 @@ class UserInputOutput
         Console.WriteLine(Constants.teamWillReachOutToYou);
     }
 
-    
+    public void DisplayAllAccountHolders()
+    {
+        Console.WriteLine("Account Holders : ");
+        foreach (var accountHolder in AccountData.AccountHoldersDetails)
+        {
+            Console.WriteLine(Constants.seperateLine);
+            Console.WriteLine($"Account Number: {accountHolder.AccountDetails.AccountNumber}");
+            Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
+            Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
+            Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
+            Console.WriteLine($"Created at: {accountHolder.CreatedOn}");
+            Console.WriteLine($"Last Modified at : {accountHolder.LastModifiedOn}");
+            Console.WriteLine(Constants.seperateLine);
+            Console.WriteLine();
+        }
+    }
+
+    public static void printAmount(AccountHolder accountHolder)
+    {
+        Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
+        Console.WriteLine(Constants.thankYou);
+    }
 }
 
