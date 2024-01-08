@@ -1,6 +1,5 @@
 ﻿using ATM_console_app.Models;
 using ATM_console_app.Services;
-using Newtonsoft.Json;
 
 class Program
 {
@@ -108,7 +107,7 @@ class Program
                     {
                         case ATMOperation.CheckBalance:
                              Console.WriteLine(Constants.checkAccountBalance);
-                             Console.WriteLine($"{Constants.yourBalanceIs}  {accountHolder.AccountDetails.Balance}");
+                             UserInputOutput.printAmount(accountHolder);
                              break;
 
                         case ATMOperation.Deposit:

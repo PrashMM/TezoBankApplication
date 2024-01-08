@@ -7,9 +7,6 @@ namespace ATM_console_app.Services
     {
         public void UpdateJson(List<AccountHolder> accountHolderList)
         {
-            //string updatedJson = JsonConvert.SerializeObject(accountHolderList);
-
-            //File.WriteAllText(@"C:\json\account.json", updatedJson);
             string updatedJson = JsonConvert.SerializeObject(accountHolderList);
             string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string filePath = Path.Combine(folderPath, "account.json");
