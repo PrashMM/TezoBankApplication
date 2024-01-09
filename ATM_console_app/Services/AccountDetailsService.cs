@@ -1,31 +1,45 @@
 ﻿using ATM_console_app.Data;
 using ATM_console_app.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATM_console_app.Services
 {
-    
+
     class AccountDetailsService
     {
-
+           
         public void AddHolderDetails(AccountHolder holder)
         {
-            AccountData.AccountHoldersDetails.Add(holder);
+            AccountData.AccountHoldersDetails.Add(holder);     
         }
 
-        public void DepositFunds(AccountHolder holder, double creditAmount)
+        public AccountHolder UpdateName(AccountHolder accountHolder, string newName)
         {
-            holder.AccountDetails.Balance += creditAmount;
+            accountHolder.CustomerDetails.FullName = newName ?? "";
+            return accountHolder;
+        }
+
+        public AccountHolder UpdateAddress(AccountHolder accountHolder, string newAddress)
+        {
+            accountHolder.CustomerDetails.AddressDetails.Location = newAddress ?? "";
+            return accountHolder;
+        }
+
+        public AccountHolder GetAccountHolderByAccNumber(String accountNum) 
+        {
+            return AccountData.AccountHoldersDetails.Find(e => e.AccountDetails.AccountNumber.Equals(accountNum));
         }
 
 
-        public void WithdrawFunds(AccountHolder holder, int debitAmount)
+        public AccountHolder PerformDeposit(AccountHolder accountHolder, int amount)
         {
-             holder.AccountDetails.Balance -= debitAmount;
+            accountHolder.AccountDetails.Balance += amount;
+            return accountHolder;
+        }
+
+        public AccountHolder PerformWithdraw(AccountHolder accountHolder, int amount)
+        {
+            accountHolder.AccountDetails.Balance -= amount;
+            return accountHolder;
         }
 
     }

@@ -1,55 +1,65 @@
-﻿using ATM_console_app.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ATM_console_app.Data;
+using ATM_console_app.Models;
+using ATM_console_app.Services;
 
- class UserInputOutput
+class UserInputOutput
+   {
+    public AccountDetailsService accountDetailsService;
+
+    public UserInputOutput()
     {
+        accountDetailsService = new AccountDetailsService();
+    }
         public bool IsAccountDetailsCorrect(AccountHolder holder)
         {
             ShowAccountDetails(holder);
             var dataIsCorrect = Console.ReadLine();
             Console.WriteLine(Constants.seperateLine);
-            return (dataIsCorrect == "Y" || dataIsCorrect == "y");
+            return dataIsCorrect.ToLower().Equals("y");
         }
 
         public void ShowAccountDetails(AccountHolder holder)
         {
             Console.WriteLine(Constants.checkAllDetails);
-            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Address: {holder.CustomerDetails.Address} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
+            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Location: {holder.CustomerDetails.AddressDetails.Location} \n*+*+* Pincode: {holder.CustomerDetails.AddressDetails.Pincode} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
             Console.WriteLine(Constants.ifCorrectPressYToProcced);
         }
 
-   
-        public string GenerateAccountNumber(AccountHolder holder)
+         public string GenerateAccountNumber(AccountHolder holder)
         {
-            if (!string.IsNullOrEmpty(holder.CustomerDetails.FullName))
-           {
-            holder.AccountDetails.AccountNumber = $"ATM0{holder.CustomerDetails.FullName[5]}{holder.CustomerDetails.MobileNumber}";
+            var uniqueValue = holder.CustomerDetails.MobileNumber.ToString();
+            holder.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[7]}{uniqueValue[0]}{uniqueValue[1]}";
             return holder.AccountDetails.AccountNumber;
-           }
-             else
-          {
-            Console.WriteLine(Constants.UnableToCreateAccountNumber);
-            return null;
-          }
         }
 
 
-
-
-    public void updateName(AccountHolder accountHolder)
+    public int GetValidAmount()
     {
-        var newName = Console.ReadLine();
-        accountHolder.CustomerDetails.FullName = newName ?? "";
+        Console.WriteLine(Constants.enterAmountToCredit);
+        if (int.TryParse(Console.ReadLine(), out var amount) && amount > 0)
+        {
+            return amount;
+        }
+        else
+        {
+            Console.WriteLine(Constants.enterValidAmount);
+            return 0;
+        }
     }
 
-    public void updateAddress(AccountHolder accountHolder)
+    public int ValidateWithdrawAmount(string accountNum)
     {
-        var newAddress = Console.ReadLine();
-        accountHolder.CustomerDetails.Address = newAddress ?? "";
+        var accountHolder = accountDetailsService.GetAccountHolderByAccNumber(accountNum);
+        Console.WriteLine(Constants.enterAmountToDebit);
+        if (int.TryParse(Console.ReadLine(), out var amount))
+        {
+            return amount > 0 && accountHolder.AccountDetails.Balance > amount ? amount : 0;
+        }
+        else
+        {
+            Console.WriteLine(Constants.enterValidAmount);
+            return 0;
+        }
     }
 
     public void HelpService()
@@ -57,6 +67,29 @@ using System.Threading.Tasks;
         Console.WriteLine(Constants.writeEmailandQuery);
         Console.ReadLine();
         Console.WriteLine(Constants.teamWillReachOutToYou);
+    }
+
+    public void DisplayAllAccountHolders()
+    {
+        Console.WriteLine("Account Holders : ");
+        foreach (var accountHolder in AccountData.AccountHoldersDetails)
+        {
+            Console.WriteLine(Constants.seperateLine);
+            Console.WriteLine($"Account Number: {accountHolder.AccountDetails.AccountNumber}");
+            Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
+            Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
+            Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
+            Console.WriteLine($"Created at: {accountHolder.CreatedOn}");
+            Console.WriteLine($"Last Modified at : {accountHolder.LastModifiedOn}");
+            Console.WriteLine(Constants.seperateLine);
+            Console.WriteLine();
+        }
+    }
+
+    public static void PrintAmount(AccountHolder accountHolder)
+    {
+        Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
+        Console.WriteLine(Constants.thankYou);
     }
 }
 
