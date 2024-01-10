@@ -12,7 +12,7 @@
         public const string enterPincode = "*-* Enter Pincode *-*";
         public const string enterAadharCardNumber = "*-* Enter your Aadhar Card Number *-*";
         public const string enterAccountNumber = "*-* Enter the Account Number *-*";
-        public const string accountOperations = "--> Press 1 to Check Balance,\n--> Press 2 to Credit amount to your account,\n--> Press 3 to Debit amount from your account,\n--> Press 4 to Edit account details\n--> Press 5 to Help \n--> Press 6 to To Create another account \n--> Press 7 to Display all Account holders details \n--> Press 8 to Exit";
+        public const string accountOperations = "--> Press 1 to Check Balance,\n--> Press 2 to Credit amount to your account,\n--> Press 3 to Debit amount from your account,\n--> Press 4 to Edit account details,\n--> Press 5 to Transfer Amount\n--> Press 6 to Transaction History\n--> Press 7 to Help Service. \n--> Press 8 to To Create another account \n--> Press 9 to Display all Account holders details \n--> Press 10 to Exit";
         public const string checkAllDetails = "Here are the Details you entered. Please check all the Details correct or Not ";
         public const string ifCorrectPressYToProcced = "<-> <-> if everything is correct, Type 'Y' to proceed <-> <->";
         public const string checkAccountBalance = "Check Your Account Balance Here";
@@ -31,5 +31,9 @@
         public const string insufficientBalance = "Insufficient Balance";
         public const string enterValidAmount = "Please enter valid amount";
         public const string UnableToCreateAccountNumber= "Warning: FullName is empty or null. Unable to create AccountNumber.";
+        public const string enterAccountNumtoTransferAmount = "Enter the account number in which you want to transfer your amount";
+        public const string enterAmountToTransfer = "Enter the amount you want to transfer";
+        public const string transactionHistory = "Transaction History:";
+        public const string noTransactionsDone = "Sorry, So far No transactions made in this account";
     } 
 }

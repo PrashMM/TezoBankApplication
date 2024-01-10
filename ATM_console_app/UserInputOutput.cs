@@ -91,5 +91,23 @@ class UserInputOutput
         Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
         Console.WriteLine(Constants.thankYou);
     }
+
+    public static void DisplayTransationHistory(Transaction transaction)
+    {
+            switch (transaction.Type)
+            {
+                case TransferType.Transfer:
+                    Console.WriteLine($"At {transaction.TransactionTime}, {transaction.TransactionAmount} has been transferred from {transaction.UserAccount.AccountDetails.AccountNumber} to {transaction.ReceiverAccount.AccountDetails.AccountNumber}");
+                    break;
+
+                case TransferType.Credit:
+                    Console.WriteLine($"At {transaction.TransactionTime}, {transaction.TransactionAmount} has been credited to {transaction.UserAccount.AccountDetails.AccountNumber}");
+                    break;
+
+                default:
+                    Console.WriteLine($"At {transaction.TransactionTime}, {transaction.TransactionAmount} has been debited from {transaction.UserAccount.AccountDetails.AccountNumber}");
+                    break;
+            }
+    }
 }
 

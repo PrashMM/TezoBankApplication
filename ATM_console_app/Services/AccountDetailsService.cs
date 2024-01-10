@@ -1,10 +1,11 @@
 ﻿using ATM_console_app.Data;
 using ATM_console_app.Models;
+using ATM_console_app.Services.Interfaces;
 
 namespace ATM_console_app.Services
 {
 
-    class AccountDetailsService
+    class AccountDetailsService : IAccountDetailsService
     {
            
         public void AddHolderDetails(AccountHolder holder)

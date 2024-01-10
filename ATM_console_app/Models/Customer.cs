@@ -14,7 +14,7 @@
         public string AadharNumber { get; set; }
         public Address AddressDetails { get; set; }
         public double InitialAmount { get; set; }
-
+     
     }
 
 }

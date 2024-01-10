@@ -6,6 +6,7 @@ class Program
     private static AccountDetailsService accountDetailsService;
     private static UserInputOutput userInputOutputService;
     private static List<AccountHolder> accountHolderDetailsList;
+    private static List<Transaction> transactionList;
     private static JsonFileService jsonFileService;
 
 
@@ -20,6 +21,7 @@ class Program
         accountDetailsService = new AccountDetailsService();
         userInputOutputService = new UserInputOutput();
         accountHolderDetailsList = new List<AccountHolder>();
+        transactionList = new List<Transaction>();
         jsonFileService = new JsonFileService();
     }
 
@@ -93,6 +95,7 @@ class Program
         Console.WriteLine(Constants.enterAccountNumber);
         var accountNumber = Console.ReadLine();
         var accountHolder = accountDetailsService.GetAccountHolderByAccNumber(accountNumber);
+        jsonFileService.TransactionHistory(transactionList);
 
         while (true)
          {
@@ -121,6 +124,11 @@ class Program
                             accountHolderDetailsList.Add(holderAfterDeposit);
                             jsonFileService.UpdateJson(accountHolderDetailsList);
                             accountHolder.LastModifiedOn = DateTime.UtcNow;
+
+                            var depositTransaction = new Transaction(DateTime.UtcNow, amountToDeposit, accountHolder, TransferType.Credit);
+                            transactionList.Add(depositTransaction);
+                            jsonFileService.UpdateTransactionFile(transactionList);
+
                             break;
 
                         case ATMOperation.Withdraw:
@@ -134,6 +142,11 @@ class Program
                             accountHolderDetailsList.Add(holderAfterWithdraw);
                             jsonFileService.UpdateJson(accountHolderDetailsList);
                             accountHolder.LastModifiedOn = DateTime.UtcNow;
+
+                            var withdrawTransaction = new Transaction(DateTime.UtcNow, amountToWithdraw, accountHolder, TransferType.Debit);
+                            transactionList.Add(withdrawTransaction);
+                            jsonFileService.UpdateTransactionFile(transactionList);
+
                             break;
 
                         case ATMOperation.EditAccountDetails:
@@ -171,6 +184,47 @@ class Program
                                     Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.AddressDetails.Location}");
                                     accountHolder.LastModifiedOn = DateTime.UtcNow;
                                     break;
+                            }
+                            break;
+
+                        case ATMOperation.TransferAmount:
+                            Console.WriteLine(Constants.enterAccountNumtoTransferAmount);
+                            var receiverAccountNumber = Console.ReadLine();
+                            var receiverAccount = accountDetailsService.GetAccountHolderByAccNumber(receiverAccountNumber);
+                            if (receiverAccount != null)
+                            {
+                                Console.WriteLine(Constants.enterAmountToTransfer);
+                                var transferAmount = int.Parse(Console.ReadLine());
+
+                                accountHolder.AccountDetails.Balance -= transferAmount;
+                                receiverAccount.AccountDetails.Balance += transferAmount;
+                         
+                                Console.WriteLine($"Amount {transferAmount} has been successfully sent to {receiverAccount.AccountDetails.AccountNumber}. So your current balance is {accountHolder.AccountDetails.Balance}");
+                                var newTransaction = new Transaction(DateTime.UtcNow, transferAmount, accountHolder, TransferType.Transfer, receiverAccount);
+                                transactionList.Add(newTransaction);
+                                jsonFileService.UpdateTransactionFile(transactionList);
+                            }
+                            else
+                            {
+                                Console.WriteLine(Constants.accountNotFound);
+
+                            }
+                            break;
+
+                        case ATMOperation.TransactionHistory:
+                            Console.WriteLine(Constants.transactionHistory);
+                          
+                            if (transactionList != null)
+                            {
+                                var accountHolderTransactions = transactionList.Where(e => e.UserAccount == accountHolder).ToList();
+                                 foreach (var transaction in accountHolderTransactions)
+                                 {
+                                    UserInputOutput.DisplayTransationHistory(transaction);
+                                 }
+                            }
+                            else
+                            {
+                                Console.WriteLine(Constants.noTransactionsDone);
                             }
                             break;
 
@@ -237,13 +291,17 @@ class Program
             case 4:
                 return ATMOperation.EditAccountDetails;
             case 5:
-                return ATMOperation.TakeHelp;
+                return ATMOperation.TransferAmount;
             case 6:
-                return ATMOperation.OpenAccount;
+                return ATMOperation.TransactionHistory;
             case 7:
-                return ATMOperation.HoldersList;
+                return ATMOperation.TakeHelp;
             case 8:
+                return ATMOperation.OpenAccount;
+            case 9:
                 return ATMOperation.HoldersList;
+            case 10:
+                return ATMOperation.Exit;
             default:
                 return default;
         }

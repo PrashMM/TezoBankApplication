@@ -12,6 +12,8 @@
         Deposit,
         Withdraw,
         EditAccountDetails,
+        TransferAmount,
+        TransactionHistory,
         TakeHelp,
         OpenAccount,
         HoldersList,
@@ -22,5 +24,12 @@
     {
         UpdateName,
         UpdateAddress
+    }
+
+    public enum TransferType
+    {
+        Credit,
+        Debit,
+        Transfer
     }
 }
