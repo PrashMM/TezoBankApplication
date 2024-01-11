@@ -2,63 +2,37 @@
 using ATM_console_app.Models;
 using ATM_console_app.Services.Interfaces;
 using Newtonsoft.Json;
+using System.Reflection.Metadata;
 
 namespace ATM_console_app.Services
 {
     public class JsonFileService  : IJsonFileService
     {
-        public void CheckForAccountHolderFile()
+        public void CheckAndUpdateFile<T>(List<T> dataList, string filePath)
         {
-            if (!File.Exists(Constants.filePath))
+            if (!File.Exists(filePath))
             {
-                UpdateHolderDetails(AccountData.AccountHoldersDetails);
+                UpdateData(dataList, filePath);
             }
             else
             {
-                List<AccountHolder> existingData = ReadHolderDetails();
-                UpdateHolderDetails(existingData);
-                AccountData.AccountHoldersDetails.AddRange(existingData);
+                List<T> existingData = ReadData<T>(filePath);
+                UpdateData(existingData, filePath);
+                dataList.AddRange(existingData);
             }
         }
 
-        public void CheckForTransactionFile()
+        public List<T> ReadData<T>(string path)
         {
-            if (!File.Exists(Constants.filePathForTransaction))
-            {
-                UpdateTransactionsData(AccountData.Transactions);
-            }
-            else
-            {
-                List<Transaction> existingData = ReadTransactions();
-                UpdateTransactionsData(existingData);
-                AccountData.Transactions.AddRange(existingData);
-            }
+            string existingData = File.ReadAllText(path);
+            if (string.IsNullOrEmpty(existingData)) return new List<T>();
+            return JsonConvert.DeserializeObject<List<T>>(existingData);
         }
 
-        public List<AccountHolder> ReadHolderDetails()
+        public void UpdateData<T>(List<T> data, string path)    
         {
-            string existingJson = File.ReadAllText(Constants.filePath);
-            if (string.IsNullOrEmpty(existingJson)) return new List<AccountHolder>();
-            return JsonConvert.DeserializeObject<List<AccountHolder>>(existingJson);
-        }
-
-        public void UpdateHolderDetails(List<AccountHolder> accountHolder)    
-        {
-            string serializedData = JsonConvert.SerializeObject(accountHolder, Formatting.Indented);
-            File.WriteAllText(Constants.filePath, serializedData);
-        }
-
-        public List<Transaction> ReadTransactions()
-        {
-            string existingData = File.ReadAllText(Constants.filePathForTransaction);
-            if (string.IsNullOrEmpty(existingData)) return new List<Transaction>();
-            return JsonConvert.DeserializeObject<List<Transaction>>(existingData);
-        }
-
-        public void UpdateTransactionsData(List<Transaction> transactions)    
-        {
-            string serializedData = JsonConvert.SerializeObject(transactions, Formatting.Indented);
-            File.WriteAllText(Constants.filePathForTransaction, serializedData);
+            string serializedData = JsonConvert.SerializeObject(data, Formatting.Indented);
+            File.WriteAllText(path, serializedData);
         }
 
 

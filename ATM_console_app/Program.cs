@@ -23,8 +23,8 @@ class Program
         transactionService = new TransactionService();
         jsonFileService = new JsonFileService();
 
-        jsonFileService.CheckForAccountHolderFile();
-        jsonFileService.CheckForAccountHolderFile();
+        jsonFileService.CheckAndUpdateFile(AccountData.AccountHoldersDetails, Constants.filePath);
+        jsonFileService.CheckAndUpdateFile(AccountData.Transactions, Constants.filePathForTransaction);
     }
 
     public static void WelcomeMenu()
@@ -92,8 +92,6 @@ class Program
                             if (userInputOutputService.IsAccountDetailsCorrect(accountHolderDetails))
                             {
                                 accountDetailsService.AddHolderDetails(accountHolderDetails);
-                                jsonFileService.UpdateHolderDetails(AccountData.AccountHoldersDetails);
-                             
                                 AccountOperation();
                             }
                             else
@@ -156,12 +154,9 @@ class Program
                             {
                                 accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
                                 UserInputOutput.PrintAmount(accountHolder);
-                                accountHolder.LastModifiedOn = DateTime.UtcNow;
-                                var depositTransaction = new Transaction(DateTime.UtcNow, amountToDeposit, accountHolder, TransferType.Credit);
-                                transactionService.AddToTransactionHistory(depositTransaction);
-
-                                jsonFileService.UpdateHolderDetails(AccountData.AccountHoldersDetails);
-                                jsonFileService.UpdateTransactionsData(AccountData.Transactions);
+                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
+                                transactionService.CreateTransactionHistory(amountToDeposit, accountHolder, TransferType.Credit, null);
+                                                                    
                             }
                             else
                             {
@@ -179,12 +174,10 @@ class Program
                             {
                                 accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
                                 UserInputOutput.PrintAmount(accountHolder);
-                                accountHolder.LastModifiedOn = DateTime.UtcNow;
-                                var withdrawTransaction = new Transaction(DateTime.UtcNow, amountToWithdraw, accountHolder, TransferType.Debit);
-                                transactionService.AddToTransactionHistory(withdrawTransaction);
 
-                                jsonFileService.UpdateHolderDetails(AccountData.AccountHoldersDetails);
-                                jsonFileService.UpdateTransactionsData(AccountData.Transactions);
+                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
+                                transactionService.CreateTransactionHistory(amountToWithdraw,accountHolder,TransferType.Debit, null);
+                      
                             }
                             else
                             {
@@ -211,10 +204,7 @@ class Program
                                         {
                                             accountDetailsService.UpdateName(accountHolder, newName);
                                             Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
-                                            accountHolder.LastModifiedOn = DateTime.UtcNow;
-
-                                            jsonFileService.UpdateHolderDetails(AccountData.AccountHoldersDetails);
-                                            
+                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             break;
                                         }
                                         else
@@ -238,9 +228,7 @@ class Program
                                         {
                                             accountDetailsService.UpdateAddress(accountHolder, newAddress);
                                             Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.AddressDetails.Location}");
-                                            accountHolder.LastModifiedOn = DateTime.UtcNow;
-
-                                            jsonFileService.UpdateHolderDetails(AccountData.AccountHoldersDetails);
+                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             break;
                                         }
                                         else
@@ -263,28 +251,20 @@ class Program
                                     Console.WriteLine(Constants.enterAmountToTransfer);
                                     if (int.TryParse(Console.ReadLine(), out var transferAmount) && transferAmount > 0 && accountHolder.AccountDetails.Balance > transferAmount)
                                     {
-                                        accountDetailsService.PerformWithdraw(accountHolder, transferAmount);
-                                        accountDetailsService.PerformDeposit(receiverAccount, transferAmount);
-
+                                        accountDetailsService.PerformTransferAmount(accountHolder, receiverAccount,transferAmount);
                                         Console.WriteLine($"Amount {transferAmount} has been successfully sent to {receiverAccount.AccountDetails.AccountNumber}. So your current balance is {accountHolder.AccountDetails.Balance}");
-                                        var newTransaction = new Transaction(DateTime.UtcNow, transferAmount, accountHolder, TransferType.Transfer, receiverAccount);
-                                        transactionService.AddToTransactionHistory(newTransaction);
-
-                                        jsonFileService.UpdateHolderDetails(AccountData.AccountHoldersDetails);
-                                        jsonFileService.UpdateTransactionsData(AccountData.Transactions);
+                                        transactionService.CreateTransactionHistory(transferAmount, accountHolder, TransferType.Transfer, receiverAccount);
                                         break;
                                     }
                                     else
                                     {
                                         Console.WriteLine(Constants.cannotTransferMorethanCurrentbalanace);
                                     }
-                                   
                                 }
                                 else
                                 {
                                     Console.WriteLine(Constants.accNotFoundOrAccNumisSame);
                                     break;
-
                                 }
                             }
                             break;

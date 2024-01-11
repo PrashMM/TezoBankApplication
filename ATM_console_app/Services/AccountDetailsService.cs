@@ -7,21 +7,30 @@ namespace ATM_console_app.Services
 
     class AccountDetailsService : IAccountDetailsService
     {
+        private static TransactionService transactionService;
+        private static JsonFileService jsonFileService;
+
+        public AccountDetailsService()
+        {
+            transactionService = new TransactionService();
+            jsonFileService = new JsonFileService();
+        }
         public void AddHolderDetails(AccountHolder holder)
         {
-            AccountData.AccountHoldersDetails.Add(holder);     
+            AccountData.AccountHoldersDetails.Add(holder);
+            jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
         }
 
-        public AccountHolder UpdateName(AccountHolder accountHolder, string newName)
+        public void UpdateName(AccountHolder accountHolder, string newName)
         {
             accountHolder.CustomerDetails.FullName = newName ?? "";
-            return accountHolder;
+            jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
         }
 
-        public AccountHolder UpdateAddress(AccountHolder accountHolder, string newAddress)
+        public void UpdateAddress(AccountHolder accountHolder, string newAddress)
         {
             accountHolder.CustomerDetails.AddressDetails.Location = newAddress ?? "";
-            return accountHolder;
+            jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
         }
 
         public AccountHolder GetAccountHolderByAccNumber(String accountNum) 
@@ -30,21 +39,34 @@ namespace ATM_console_app.Services
         }
 
 
-        public AccountHolder PerformDeposit(AccountHolder accountHolder, int amount)
+        public void PerformDeposit(AccountHolder accountHolder, int amount)
         {
             accountHolder.AccountDetails.Balance += amount;
-            return accountHolder;
+            jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
+            jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
         }
 
-        public AccountHolder PerformWithdraw(AccountHolder accountHolder, int amount)
+        public void PerformWithdraw(AccountHolder accountHolder, int amount)
         {
             accountHolder.AccountDetails.Balance -= amount;
-            return accountHolder;
+            jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
+            jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
         }
 
         public bool MobileNumberExistsOrNot(string number)
         {
-            return AccountData.AccountHoldersDetails.Where(e => e.CustomerDetails.MobileNumber == number).Any();
+            return AccountData.AccountHoldersDetails.Where(e => e.CustomerDetails.MobileNumber.Equals(number)).Any();
+        }
+
+        public void PerformTransferAmount(AccountHolder accountHolder, AccountHolder receiverAccount,int transferAmount)
+        {   
+                PerformWithdraw(accountHolder, transferAmount);
+                PerformDeposit(receiverAccount, transferAmount);            
+        }
+
+        public void UpdateLastModifiedTime(AccountHolder accountHolder)
+        {
+            accountHolder.LastModifiedOn = DateTime.UtcNow;
         }
     }
 }
