@@ -2,9 +2,12 @@
 {
     public static class Constants
     {
+        public static string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        public static string filePath = Path.Combine(folderPath, "tezoAtmAccHolders.json");
+        public static string filePathForTransaction = Path.Combine(folderPath, "tezoAtmTransactions.json");
         public const string welcomeMessage = "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\nHello Sir/Madam, Welcome to ATM Bank\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
         public const string seperateLine = "--------------------------------------------------";
-        public const string chooseOperation = "Choose Any Below Options to Proceed\n Press 1 to Open your account\n Press 2 to Exit";
+        public const string chooseOperation = "Choose Any Below Options to Proceed\n Press 1 to Open your account\n Press 2 to Login to your account \n Press 3 to Exit";
         public const string enterFollowingDetails = "Please enter the following details to open your account";
         public const string enterFullName = "*-* Enter your Full Name *-*";
         public const string enterMobileNumber = "*-* Enter your Mobile Number *-*";
@@ -35,5 +38,12 @@
         public const string enterAmountToTransfer = "Enter the amount you want to transfer";
         public const string transactionHistory = "Transaction History:";
         public const string noTransactionsDone = "Sorry, So far No transactions made in this account";
-    } 
+        public const string incorrectMobileNumber = "The provided mobile number already exists or is not valid. Please enter a different mobile number.";
+        public const string amountIs0orLess= "The amount you entered is either 0 or less. Please enter a valid amount.";
+        public const string cannotWithdrawMorethanCurrentbalanace= "Sorry, you cannot withdraw more than your current balance";
+        public const string cannotTransferMorethanCurrentbalanace = "Sorry, you cannot transfer more than your current balance";
+        public const string enterValidName = "Please enter valid name";
+        public const string accNotFoundOrAccNumisSame =  "Account not found or you are attempting to transfer the amount within the same account.";
+        public const string enterValidAddress = "Please enter valid Address";
+    }   
 }

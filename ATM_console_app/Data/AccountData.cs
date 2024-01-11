@@ -6,6 +6,6 @@ namespace ATM_console_app.Data
     {
        public static List<AccountHolder> AccountHoldersDetails { get; set; } = new List<AccountHolder>();
 
-        public static List<Transaction> TransactionList { get; set; } = new List<Transaction>();
+       public static List<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 }

@@ -1,17 +1,16 @@
-﻿using ATM_console_app.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using ATM_console_app.Models;
 
 namespace ATM_console_app.Services.Interfaces
 {
     public interface IJsonFileService 
     {
-        public void UpdateJson(List<AccountHolder> accountHolderList);
-        public void CreateJSONDocument(List<AccountHolder> accountHolderDetailsList);
-        public void TransactionHistory(List<Transaction> transactionList);
-        public void UpdateTransactionFile(List<Transaction> transaction);
+        public void CheckForAccountHolderFile();
+        public void CheckForTransactionFile();
+        public List<AccountHolder> ReadHolderDetails();
+        public void UpdateHolderDetails(List<AccountHolder> accountHolder);
+        public List<Transaction> ReadTransactions();
+        public void UpdateTransactionsData(List<Transaction> transactions);
     }
 }

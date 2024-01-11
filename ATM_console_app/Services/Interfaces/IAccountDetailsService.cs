@@ -1,9 +1,4 @@
 ﻿using ATM_console_app.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATM_console_app.Services.Interfaces
 {
@@ -15,8 +10,7 @@ namespace ATM_console_app.Services.Interfaces
         public AccountHolder GetAccountHolderByAccNumber(String accountNum);
         public AccountHolder PerformDeposit(AccountHolder accountHolder, int amount);
         public AccountHolder PerformWithdraw(AccountHolder accountHolder, int amount);
-
-
+        public bool MobileNumberExistsOrNot(string number);
 
     }
 }

@@ -7,7 +7,6 @@ namespace ATM_console_app.Services
 
     class AccountDetailsService : IAccountDetailsService
     {
-           
         public void AddHolderDetails(AccountHolder holder)
         {
             AccountData.AccountHoldersDetails.Add(holder);     
@@ -43,5 +42,10 @@ namespace ATM_console_app.Services
             return accountHolder;
         }
 
+        public bool MobileNumberExistsOrNot(string number)
+        {
+            return AccountData.AccountHoldersDetails.Where(e => e.CustomerDetails.MobileNumber == number).Any();
+        }
     }
 }
+

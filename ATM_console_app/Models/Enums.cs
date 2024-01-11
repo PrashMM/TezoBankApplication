@@ -3,6 +3,7 @@
     public enum MainMenu
     {
         OpenAccount = 1,
+        Login,
         Exit,
     }
 

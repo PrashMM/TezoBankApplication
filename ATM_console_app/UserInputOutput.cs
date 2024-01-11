@@ -1,15 +1,8 @@
 ﻿using ATM_console_app.Data;
 using ATM_console_app.Models;
-using ATM_console_app.Services;
 
 class UserInputOutput
    {
-    public AccountDetailsService accountDetailsService;
-
-    public UserInputOutput()
-    {
-        accountDetailsService = new AccountDetailsService();
-    }
         public bool IsAccountDetailsCorrect(AccountHolder holder)
         {
             ShowAccountDetails(holder);
@@ -28,46 +21,15 @@ class UserInputOutput
          public string GenerateAccountNumber(AccountHolder holder)
         {
             var uniqueValue = holder.CustomerDetails.MobileNumber.ToString();
-            holder.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[7]}{uniqueValue[0]}{uniqueValue[1]}";
+            holder.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[0]}{uniqueValue[0]}{uniqueValue[1]}";
             return holder.AccountDetails.AccountNumber;
         }
-
-
-    public int GetValidAmount()
-    {
-        Console.WriteLine(Constants.enterAmountToCredit);
-        if (int.TryParse(Console.ReadLine(), out var amount) && amount > 0)
+        public void HelpService()
         {
-            return amount;
+             Console.WriteLine(Constants.writeEmailandQuery);
+             Console.ReadLine();
+             Console.WriteLine(Constants.teamWillReachOutToYou);
         }
-        else
-        {
-            Console.WriteLine(Constants.enterValidAmount);
-            return 0;
-        }
-    }
-
-    public int ValidateWithdrawAmount(string accountNum)
-    {
-        var accountHolder = accountDetailsService.GetAccountHolderByAccNumber(accountNum);
-        Console.WriteLine(Constants.enterAmountToDebit);
-        if (int.TryParse(Console.ReadLine(), out var amount))
-        {
-            return amount > 0 && accountHolder.AccountDetails.Balance > amount ? amount : 0;
-        }
-        else
-        {
-            Console.WriteLine(Constants.enterValidAmount);
-            return 0;
-        }
-    }
-
-    public void HelpService()
-    {
-        Console.WriteLine(Constants.writeEmailandQuery);
-        Console.ReadLine();
-        Console.WriteLine(Constants.teamWillReachOutToYou);
-    }
 
     public void DisplayAllAccountHolders()
     {
@@ -97,17 +59,19 @@ class UserInputOutput
             switch (transaction.Type)
             {
                 case TransferType.Transfer:
-                    Console.WriteLine($"At {transaction.TransactionTime}, {transaction.TransactionAmount} has been transferred from {transaction.UserAccount.AccountDetails.AccountNumber} to {transaction.ReceiverAccount.AccountDetails.AccountNumber}");
+                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccount.AccountDetails.AccountNumber} to {transaction.ReceiverAccount.AccountDetails.AccountNumber}");
                     break;
 
                 case TransferType.Credit:
-                    Console.WriteLine($"At {transaction.TransactionTime}, {transaction.TransactionAmount} has been credited to {transaction.UserAccount.AccountDetails.AccountNumber}");
+                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccount.AccountDetails.AccountNumber}");
                     break;
 
                 default:
-                    Console.WriteLine($"At {transaction.TransactionTime}, {transaction.TransactionAmount} has been debited from {transaction.UserAccount.AccountDetails.AccountNumber}");
+                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been debited from {transaction.UserAccount.AccountDetails.AccountNumber}");
                     break;
             }
     }
+
+    
 }
 

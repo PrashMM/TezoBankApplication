@@ -1,44 +1,66 @@
-﻿using ATM_console_app.Models;
+﻿using ATM_console_app.Data;
+using ATM_console_app.Models;
 using ATM_console_app.Services.Interfaces;
 using Newtonsoft.Json;
 
 namespace ATM_console_app.Services
 {
-    public class JsonFileService : IJsonFileService
+    public class JsonFileService  : IJsonFileService
     {
-        public void UpdateJson(List<AccountHolder> accountHolderList)
+        public void CheckForAccountHolderFile()
         {
-            string updatedJson = JsonConvert.SerializeObject(accountHolderList);
-            string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string filePath = Path.Combine(folderPath, "account.json");
+            if (!File.Exists(Constants.filePath))
+            {
+                UpdateHolderDetails(AccountData.AccountHoldersDetails);
+            }
+            else
+            {
+                List<AccountHolder> existingData = ReadHolderDetails();
+                UpdateHolderDetails(existingData);
+                AccountData.AccountHoldersDetails.AddRange(existingData);
+            }
+        }
 
-            File.WriteAllText(filePath, updatedJson);
+        public void CheckForTransactionFile()
+        {
+            if (!File.Exists(Constants.filePathForTransaction))
+            {
+                UpdateTransactionsData(AccountData.Transactions);
+            }
+            else
+            {
+                List<Transaction> existingData = ReadTransactions();
+                UpdateTransactionsData(existingData);
+                AccountData.Transactions.AddRange(existingData);
+            }
+        }
+
+        public List<AccountHolder> ReadHolderDetails()
+        {
+            string existingJson = File.ReadAllText(Constants.filePath);
+            if (string.IsNullOrEmpty(existingJson)) return new List<AccountHolder>();
+            return JsonConvert.DeserializeObject<List<AccountHolder>>(existingJson);
+        }
+
+        public void UpdateHolderDetails(List<AccountHolder> accountHolder)    
+        {
+            string serializedData = JsonConvert.SerializeObject(accountHolder, Formatting.Indented);
+            File.WriteAllText(Constants.filePath, serializedData);
+        }
+
+        public List<Transaction> ReadTransactions()
+        {
+            string existingData = File.ReadAllText(Constants.filePathForTransaction);
+            if (string.IsNullOrEmpty(existingData)) return new List<Transaction>();
+            return JsonConvert.DeserializeObject<List<Transaction>>(existingData);
+        }
+
+        public void UpdateTransactionsData(List<Transaction> transactions)    
+        {
+            string serializedData = JsonConvert.SerializeObject(transactions, Formatting.Indented);
+            File.WriteAllText(Constants.filePathForTransaction, serializedData);
         }
 
 
-        public void CreateJSONDocument(List<AccountHolder> accountHolderDetailsList)
-        {
-            string JSONresult = JsonConvert.SerializeObject(accountHolderDetailsList);
-            string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string filePath = Path.Combine(folderPath, "account.json");
-            File.WriteAllText(filePath, JSONresult);
-        }
-
-        public void TransactionHistory(List<Transaction> transactionList)
-        {
-            string JSONresult = JsonConvert.SerializeObject(transactionList);
-            string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string filePath = Path.Combine(folderPath, "transaction.json");
-            File.WriteAllText(filePath, JSONresult);
-        }
-
-        public void UpdateTransactionFile(List<Transaction> transaction)
-        {
-            string updatedJson = JsonConvert.SerializeObject(transaction);
-            string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string filePath = Path.Combine(folderPath, "transaction.json");
-
-            File.WriteAllText(filePath, updatedJson);
-        }
     }
 }
