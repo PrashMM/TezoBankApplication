@@ -152,11 +152,9 @@ class Program
                             Console.WriteLine(Constants.enterAmountToCredit);
                             if (int.TryParse(Console.ReadLine(), out var amountToDeposit) && amountToDeposit > 0)
                             {
+                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                 accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
                                 UserInputOutput.PrintAmount(accountHolder);
-                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                transactionService.CreateTransactionHistory(amountToDeposit, accountHolder, TransferType.Credit, null);
-                                                                    
                             }
                             else
                             {
@@ -169,21 +167,17 @@ class Program
 
 
                             Console.WriteLine(Constants.enterAmountToDebit);
-                  
+
                             if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && accountHolder.AccountDetails.Balance > amountToWithdraw)
                             {
+                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                 accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
                                 UserInputOutput.PrintAmount(accountHolder);
-
-                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                transactionService.CreateTransactionHistory(amountToWithdraw,accountHolder,TransferType.Debit, null);
-                      
                             }
                             else
                             {
                                 Console.WriteLine(Constants.cannotWithdrawMorethanCurrentbalanace);
                             }
-
                             break;
 
                         case ATMOperation.EditAccountDetails:
@@ -202,15 +196,14 @@ class Program
                                       
                                         if (!string.IsNullOrWhiteSpace(newName))
                                         {
+                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             accountDetailsService.UpdateName(accountHolder, newName);
                                             Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
-                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             break;
                                         }
                                         else
                                         {
                                             Console.WriteLine(Constants.enterValidName);
-                                           
                                         }
                                     }
                                   break;
@@ -226,9 +219,9 @@ class Program
                                    
                                         if (!string.IsNullOrWhiteSpace(newAddress))
                                         {
+                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             accountDetailsService.UpdateAddress(accountHolder, newAddress);
                                             Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.AddressDetails.Location}");
-                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             break;
                                         }
                                         else
@@ -253,7 +246,6 @@ class Program
                                     {
                                         accountDetailsService.PerformTransferAmount(accountHolder, receiverAccount,transferAmount);
                                         Console.WriteLine($"Amount {transferAmount} has been successfully sent to {receiverAccount.AccountDetails.AccountNumber}. So your current balance is {accountHolder.AccountDetails.Balance}");
-                                        transactionService.CreateTransactionHistory(transferAmount, accountHolder, TransferType.Transfer, receiverAccount);
                                         break;
                                     }
                                     else
@@ -378,7 +370,6 @@ class Program
                 return UpdateDetails.UpdateAddress;
             default:
                 return default;
-
         }
 
     }

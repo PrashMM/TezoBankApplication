@@ -42,6 +42,7 @@ namespace ATM_console_app.Services
         public void PerformDeposit(AccountHolder accountHolder, int amount)
         {
             accountHolder.AccountDetails.Balance += amount;
+            transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Credit, null);
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
             jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
         }
@@ -49,8 +50,9 @@ namespace ATM_console_app.Services
         public void PerformWithdraw(AccountHolder accountHolder, int amount)
         {
             accountHolder.AccountDetails.Balance -= amount;
+            transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Debit, null);
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-            jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
+           jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
         }
 
         public bool MobileNumberExistsOrNot(string number)
@@ -60,8 +62,11 @@ namespace ATM_console_app.Services
 
         public void PerformTransferAmount(AccountHolder accountHolder, AccountHolder receiverAccount,int transferAmount)
         {   
-                PerformWithdraw(accountHolder, transferAmount);
-                PerformDeposit(receiverAccount, transferAmount);            
+            accountHolder.AccountDetails.Balance -= transferAmount;
+            receiverAccount.AccountDetails.Balance += transferAmount;
+            transactionService.CreateTransactionHistory(transferAmount, accountHolder, TransferType.Transfer, receiverAccount);
+            jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
+            jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
         }
 
         public void UpdateLastModifiedTime(AccountHolder accountHolder)
