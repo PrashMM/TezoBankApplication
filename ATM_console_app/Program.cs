@@ -1,6 +1,8 @@
-﻿using ATM_console_app.Data;
-using ATM_console_app.Models;
-using ATM_console_app.Services;
+﻿
+
+using Data;
+using Models;
+using Services;
 
 class Program
 {
@@ -43,61 +45,7 @@ class Program
                     switch (GetMainMenuByInput(userInput))
                     {
                         case MainMenu.OpenAccount:
-                            Console.WriteLine(Constants.enterFollowingDetails);
-                            Console.WriteLine(Constants.seperateLine);
-
-                            string fullName;
-                            while (true)
-                            {
-                                Console.WriteLine(Constants.enterFullName);
-                                fullName = Console.ReadLine();
-
-                                if (string.IsNullOrWhiteSpace(fullName))
-                                {
-                                    Console.WriteLine(Constants.enterValidName);
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-
-                            string mobileNumber;
-                            while (true)
-                            {
-                                Console.WriteLine(Constants.enterMobileNumber);
-                                mobileNumber = Console.ReadLine();
-
-                                if (accountDetailsService.MobileNumberExistsOrNot(mobileNumber) || string.IsNullOrWhiteSpace(mobileNumber))
-                                {
-                                    Console.WriteLine(Constants.incorrectMobileNumber);
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            Console.WriteLine(Constants.enterLocation);
-                            var address = Console.ReadLine();
-                            Console.WriteLine(Constants.enterPincode);
-                            var pinCode = Console.ReadLine();
-                            Console.WriteLine(Constants.enterAadharCardNumber);
-                            var aadharNumber = Console.ReadLine();
-
-                            Console.WriteLine(Constants.seperateLine);
-
-                            var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
-
-
-                            if (userInputOutputService.IsAccountDetailsCorrect(accountHolderDetails))
-                            {
-                                accountDetailsService.AddHolderDetails(accountHolderDetails);
-                                AccountOperation();
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            OpenAccount();
                             break;
 
                         case MainMenu.Login:
@@ -122,6 +70,69 @@ class Program
             }
 
         }
+    }
+
+
+    private static void OpenAccount()
+    {
+        Console.WriteLine(Constants.enterFollowingDetails);
+        Console.WriteLine(Constants.seperateLine);
+
+        string fullName;
+        while (true)
+        {
+            Console.WriteLine(Constants.enterFullName);
+            fullName = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(fullName))
+            {
+                Console.WriteLine(Constants.enterValidName);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        string mobileNumber;
+        while (true)
+        {
+            Console.WriteLine(Constants.enterMobileNumber);
+            mobileNumber = Console.ReadLine();
+
+            if (accountDetailsService.MobileNumberExistsOrNot(mobileNumber) || string.IsNullOrWhiteSpace(mobileNumber))
+            {
+                Console.WriteLine(Constants.incorrectMobileNumber);
+            }
+            else
+            {
+                break;
+            }
+        }
+        Console.WriteLine(Constants.enterLocation);
+        var address = Console.ReadLine();
+        Console.WriteLine(Constants.enterPincode);
+        var pinCode = Console.ReadLine();
+        Console.WriteLine(Constants.enterAadharCardNumber);
+        var aadharNumber = Console.ReadLine();
+
+        Console.WriteLine(Constants.seperateLine);
+
+        var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
+
+        userInputOutputService.ShowAccountDetails(accountHolderDetails);
+        var dataIsCorrect = Console.ReadLine();
+        if (userInputOutputService.IsAccountDetailsCorrect(accountHolderDetails, dataIsCorrect))
+        {
+            accountDetailsService.AddHolderDetails(accountHolderDetails);
+            AccountOperation();
+        }
+        else
+        {
+            // break; 
+            return;
+        }
+        
     }
 
     private static void AccountOperation()

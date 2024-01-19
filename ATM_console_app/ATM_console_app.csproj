@@ -8,7 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Compile Remove="Models\**" />
+    <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Data\**" />
+    <None Remove="Models\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Datas\Data.csproj" />
+    <ProjectReference Include="..\Model\Models.csproj" />
+    <ProjectReference Include="..\Service\Services.csproj" />
   </ItemGroup>
 
 </Project>

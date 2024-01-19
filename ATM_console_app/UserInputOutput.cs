@@ -1,12 +1,10 @@
-﻿using ATM_console_app.Data;
-using ATM_console_app.Models;
+﻿using Data;
+using Models;
 
 class UserInputOutput
    {
-        public bool IsAccountDetailsCorrect(AccountHolder holder)
+        public bool IsAccountDetailsCorrect(AccountHolder holder, string dataIsCorrect)
         {
-            ShowAccountDetails(holder);
-            var dataIsCorrect = Console.ReadLine();
             Console.WriteLine(Constants.seperateLine);
             return dataIsCorrect.ToLower().Equals("y");
         }
