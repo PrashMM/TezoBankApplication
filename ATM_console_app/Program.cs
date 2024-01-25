@@ -10,6 +10,7 @@ class Program
     private static UserInputOutput userInputOutputService;
     private static TransactionService transactionService;
     private static JsonFileService jsonFileService;
+    private static DatabaseService databaseService;
    
 
     public static void Main()
@@ -24,9 +25,12 @@ class Program
         userInputOutputService = new UserInputOutput();
         transactionService = new TransactionService();
         jsonFileService = new JsonFileService();
+        databaseService = new DatabaseService();
 
         jsonFileService.CheckAndUpdateFile(AccountData.AccountHoldersDetails, Constants.filePath);
         jsonFileService.CheckAndUpdateFile(AccountData.Transactions, Constants.filePathForTransaction);
+
+        databaseService.CreateTable();
     }
 
     public static void WelcomeMenu()

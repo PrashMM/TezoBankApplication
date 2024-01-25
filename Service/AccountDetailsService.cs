@@ -11,29 +11,34 @@ namespace Services
     {
         private static TransactionService transactionService;
         private static JsonFileService jsonFileService;
+        private static DatabaseService databaseService;
 
         public AccountDetailsService()
         {
             transactionService = new TransactionService();
             jsonFileService = new JsonFileService();
+            databaseService = new DatabaseService();
         }
         public void AddHolderDetails(AccountHolder holder)
         {
             AccountData.AccountHoldersDetails.Add(holder);
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-        }
+            databaseService.AddHoldersInsideTable(holder);
+        }        
 
         public void UpdateName(AccountHolder accountHolder, string newName)
         {
             accountHolder.CustomerDetails.FullName = newName ?? "";
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
+            databaseService.UpdateHolderName(accountHolder, newName);
         }
 
         public void UpdateAddress(AccountHolder accountHolder, string newAddress)
         {
             accountHolder.CustomerDetails.AddressDetails.Location = newAddress ?? "";
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-        }
+            databaseService.UpdateHolderAddress(accountHolder, newAddress);
+        } 
 
         public AccountHolder GetAccountHolderByAccNumber(string accountNum)
         {
@@ -47,6 +52,7 @@ namespace Services
             transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Credit, null);
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
             jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
+            databaseService.UpdateDepositAmount(accountHolder, amount);
         }
 
         public void PerformWithdraw(AccountHolder accountHolder, int amount)
@@ -55,6 +61,7 @@ namespace Services
             transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Debit, null);
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
             jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
+            databaseService.UpdateWithdrawAmount(accountHolder, amount);      
         }
 
         public bool MobileNumberExistsOrNot(string number)
@@ -69,12 +76,13 @@ namespace Services
             transactionService.CreateTransactionHistory(transferAmount, accountHolder, TransferType.Transfer, receiverAccount);
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
             jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
+            databaseService.UpdateTransferAmount(accountHolder, receiverAccount, transferAmount);
         }
 
         public void UpdateLastModifiedTime(AccountHolder accountHolder)
         {
             accountHolder.LastModifiedOn = DateTime.UtcNow;
+            databaseService.UpdateLastModificationTime(accountHolder);
         }
     }
 }
-
