@@ -8,10 +8,12 @@ namespace Services
     public class TransactionService : ITransactionService
     {
         private static JsonFileService jsonFileService;
+        private static DatabaseService databaseService;
 
         public TransactionService()
         {
             jsonFileService = new JsonFileService();
+            databaseService = new DatabaseService();
         }
         public bool CheckTransactionHistoryIsEmptyOrNot()
         {
@@ -21,6 +23,7 @@ namespace Services
         public void AddToTransactionHistory(Transaction newTransaction)
         {
             AccountData.Transactions.Add(newTransaction);
+            databaseService.AddTransactionInsideListTable(newTransaction);          
         }
 
         public List<Transaction> CurrentHolderTransactionHistory(AccountHolder accountHolder)
@@ -34,6 +37,7 @@ namespace Services
             AddToTransactionHistory(transaction);
             jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
             jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
+
         }
 
     }

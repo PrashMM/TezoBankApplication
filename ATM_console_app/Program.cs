@@ -31,6 +31,7 @@ class Program
         jsonFileService.CheckAndUpdateFile(AccountData.Transactions, Constants.filePathForTransaction);
 
         databaseService.CreateTable();
+        databaseService.CreateTransactionsTable();
     }
 
     public static void WelcomeMenu()
@@ -121,8 +122,10 @@ class Program
         var aadharNumber = Console.ReadLine();
 
         Console.WriteLine(Constants.seperateLine);
+       
+       
 
-        var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
+        var accountHolderDetails = new AccountHolder(fullName , mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
 
         userInputOutputService.ShowAccountDetails(accountHolderDetails);
         var dataIsCorrect = Console.ReadLine();
