@@ -23,7 +23,7 @@ namespace Services
         public void AddToTransactionHistory(Transaction newTransaction)
         {
             AccountData.Transactions.Add(newTransaction);
-            databaseService.AddTransactionInsideListTable(newTransaction);          
+            databaseService.AddTransactionInsideTable(newTransaction);          
         }
 
         public List<Transaction> CurrentHolderTransactionHistory(AccountHolder accountHolder)

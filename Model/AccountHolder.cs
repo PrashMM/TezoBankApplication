@@ -3,16 +3,11 @@
 
     public class AccountHolder
     {
-      //  public int id { get; set; } // Primary key for the AccountHolder table
+        // public int id { get; set; } // Primary key 
         public Customer CustomerDetails { get; set; }
         public Account AccountDetails { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime LastModifiedOn { get; set; }
-
-
-        //public virtual ICollection<Transaction> SentTransactions { get; set; }
-        //public virtual ICollection<Transaction> ReceivedTransactions { get; set; }
-
 
         public AccountHolder( string fullName, string mobileNumber, string addressName, string pincode, string aadharNumber, string accountNumber, double initialAmount, double balance)
         {

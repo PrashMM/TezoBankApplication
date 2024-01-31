@@ -14,23 +14,22 @@ namespace Services
         }
         
 
-        public void CreateTable()
-        {
-
+        public void CreateAccountHolderTable()
+        { 
             try
             {
                 using (SqlConnection con = OpenConnection())
                 {
-                    SqlCommand cmd = new SqlCommand("CREATE TABLE [userTable](id INT NOT NULL PRIMARY KEY IDENTITY, fullName VARCHAR(100), mobileNumber VARCHAR(100), addressName VARCHAR(100), pincode VARCHAR(100), aadharNumber VARCHAR(100),accountNumber VARCHAR(100), initialAmount FLOAT NOT NULL, balance FLOAT NOT NULL, CreatedOn DATE, LastModifiedOn DATE)", con);
-
+                    SqlCommand cmd = new SqlCommand("CREATE TABLE [userTable](fullName VARCHAR(100), mobileNumber VARCHAR(100), addressName VARCHAR(100), pincode VARCHAR(100), aadharNumber VARCHAR(100),accountNumber VARCHAR(100) NOT NULL PRIMARY KEY NONCLUSTERED DEFAULT NEWID(), initialAmount FLOAT NOT NULL, balance FLOAT NOT NULL, CreatedOn DATE, LastModifiedOn DATE)", con);
+                    
                     cmd.ExecuteNonQuery();
                     
-                    Console.WriteLine("Table created successfully. ");
+                    //  Console.WriteLine("Table created successfully. ");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -41,76 +40,47 @@ namespace Services
             {
                 using (SqlConnection con = OpenConnection())
                 {
-                    SqlCommand cmd = new SqlCommand("CREATE TABLE [transactions] (Id INT NOT NULL PRIMARY KEY IDENTITY, Time DATETIME, Amount FLOAT NOT NULL, UserAccountId INT, ReceiverAccountId INT NOT NULL, Type INT NOT NULL,FOREIGN KEY (UserAccountId) REFERENCES [userTable](id),FOREIGN KEY (ReceiverAccountId) REFERENCES [userTable](id))", con);
+                    SqlCommand cmd = new SqlCommand("CREATE TABLE [transactions] (Id INT NOT NULL PRIMARY KEY IDENTITY, Time DATETIME, Amount FLOAT NOT NULL, UserAccountId VARCHAR(100), ReceiverAccountId VARCHAR(100) NOT NULL, Type INT NOT NULL,FOREIGN KEY (UserAccountId) REFERENCES [userTable](accountNumber), FOREIGN KEY (ReceiverAccountId) REFERENCES [userTable](accountNumber) )", con);
 
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Tranactions Table created successfully.");
+                   //  Console.WriteLine("Tranactions Table created successfully.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
-        public void AddTransactionInsideListTable(Transaction transaction)
+        public void AddTransactionInsideTable(Transaction transaction)
         {
             try
             {
                 using (SqlConnection con = OpenConnection())
                 {
-                    
-                    int userId = -1; 
-                    string query = "SELECT id FROM userTable WHERE accountNumber = @AccountNumber";
-                    using (SqlCommand getUserCmd = new SqlCommand(query, con))
-                    {
-                        getUserCmd.Parameters.AddWithValue("@AccountNumber", transaction.UserAccount.AccountDetails.AccountNumber);
-                        using (SqlDataReader reader = getUserCmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                userId = reader.GetInt32(reader.GetOrdinal("id"));
-                            }
-                        }
-                    }
-
-                    int userReceiverId = -1; 
-                    if (transaction.ReceiverAccount != null)
-                    {
-                        string queryReceiver = "SELECT id FROM userTable WHERE accountNumber = @AccountNumber";
-                        using (SqlCommand getUserReceiverCmd = new SqlCommand(queryReceiver, con))
-                        {
-                            getUserReceiverCmd.Parameters.AddWithValue("@AccountNumber", transaction.ReceiverAccount.AccountDetails.AccountNumber);
-                            using (SqlDataReader receiverReader = getUserReceiverCmd.ExecuteReader())
-                            {
-                                if (receiverReader.Read())
-                                {
-                                    userReceiverId = receiverReader.GetInt32(receiverReader.GetOrdinal("id"));
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        userReceiverId = 1; 
-                    }
-
                     SqlCommand cmd = new SqlCommand("INSERT INTO [transactions] (Time, Amount, UserAccountId, ReceiverAccountId, Type) VALUES (@Time, @Amount, @UserAccountId, @ReceiverAccountId, @Type)", con);
                     cmd.Parameters.AddWithValue("@Time", DateTime.UtcNow);
                     cmd.Parameters.AddWithValue("@Amount", transaction.Amount);
-                    cmd.Parameters.AddWithValue("@UserAccountId", userId);
-                    cmd.Parameters.AddWithValue("@ReceiverAccountId", userReceiverId);
+                    cmd.Parameters.AddWithValue("@UserAccountId", transaction.UserAccount.AccountDetails.AccountNumber);
+                    if (transaction.ReceiverAccount != null)
+                    {
+                        cmd.Parameters.AddWithValue("@ReceiverAccountId", transaction.ReceiverAccount.AccountDetails.AccountNumber);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@ReceiverAccountId", transaction.UserAccount.AccountDetails.AccountNumber);
+                    }
                     cmd.Parameters.AddWithValue("@Type", transaction.Type);
 
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Holder Transactions inserted successfully inside Table.");
+                    // Console.WriteLine("Holder Transactions inserted successfully inside Table.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -135,12 +105,12 @@ namespace Services
 
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Holder Deatils inserted successfully inside Table.");
+                    // Console.WriteLine("Holder Deatils inserted successfully inside Table.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -156,12 +126,12 @@ namespace Services
 
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Holder Name updated successfully inside Table");
+                    // Console.WriteLine("Holder Name updated successfully inside Table");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -175,15 +145,15 @@ namespace Services
                     SqlCommand cmd = new SqlCommand("UPDATE [userTable] SET addressName = @AddressName WHERE accountNumber = @AccountNumber", con);
                     cmd.Parameters.AddWithValue("@AddressName", newAddress);
                     cmd.Parameters.AddWithValue("@AccountNumber", accountHolder.AccountDetails.AccountNumber);
-
+                    
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Holder Address updated successfully inside Table");
+                    // Console.WriteLine("Holder Address updated successfully inside Table");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -194,19 +164,18 @@ namespace Services
                 using (SqlConnection con = OpenConnection())
                 {
 
-                     SqlCommand cmd = new SqlCommand("UPDATE [userTable] SET balance = balance + @Amount WHERE accountNumber = @AccountNumber", con);
-
+                    SqlCommand cmd = new SqlCommand("UPDATE [userTable] SET balance = balance + @Amount WHERE accountNumber = @AccountNumber", con);
                     cmd.Parameters.AddWithValue("@Amount", amount);
                     cmd.Parameters.AddWithValue("@AccountNumber", accountHolder.AccountDetails.AccountNumber);
-
+                    
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Amount updated successfully inside Table");
+                    // Console.WriteLine("Amount updated successfully inside Table");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -220,15 +189,14 @@ namespace Services
 
                     cmd.Parameters.AddWithValue("@Amount", amount);
                     cmd.Parameters.AddWithValue("@AccountNumber", accountHolder.AccountDetails.AccountNumber);
-
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Amount updated successfully inside Table");
+                    // Console.WriteLine("Amount updated successfully inside Table");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -249,13 +217,13 @@ namespace Services
                     cmd2.Parameters.AddWithValue("@ReceiverAccountNumber", receiverAccount.AccountDetails.AccountNumber);
                     cmd2.ExecuteNonQuery();
 
-                    Console.WriteLine("Transfered Amount updated successfully.");
+                    // Console.WriteLine("Transfered Amount updated successfully.");
 
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
         }
 
@@ -267,19 +235,25 @@ namespace Services
                 using (SqlConnection con = OpenConnection())
                 {
                     SqlCommand cmd = new SqlCommand("UPDATE [userTable] SET LastModifiedOn = @LastModifiedOn WHERE accountNumber = @AccountNumber", con);
+                   
                     cmd.Parameters.AddWithValue("@LastModifiedOn", DateTime.UtcNow);
                     cmd.Parameters.AddWithValue("@AccountNumber", accountHolder.AccountDetails.AccountNumber);
-
+                   
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Time updated successfully.");
+                    // Console.WriteLine("Time updated successfully.");
 
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating data: {ex.Message}");
+                ErrorMessage(ex);
             }
+        }
+
+        public void ErrorMessage(Exception ex)
+        {
+            Console.WriteLine($"Error updating data: {ex.Message}");
         }
     }
 }

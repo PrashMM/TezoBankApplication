@@ -9,7 +9,9 @@ namespace Services.Interfaces
 {
     public interface IDatabaseServices
     {
-        public void CreateTable();
+        public void CreateAccountHolderTable();
+        public void CreateTransactionsTable();
+        public void AddTransactionInsideTable(Transaction transaction);
         public void AddHoldersInsideTable(AccountHolder holder);
         public void UpdateHolderName(AccountHolder accountHolder, string newName);
         public void UpdateHolderAddress(AccountHolder accountHolder, string newAddress);

@@ -4,11 +4,11 @@
     {    
         public DateTime Time { get; set; }
         public double Amount { get; set; }
-        public int UserAccountId { get; set; } // Foreign key--->    UserAccount
-        public int? ReceiverAccountId { get; set; } // foreign key--->  ReceiverAccount
+        public string UserAccountId { get; set; } // foreign key 
+        public string? ReceiverAccountId { get; set; } // foreign key 
         public TransferType Type { get; set; }
 
-        
+       
         public virtual AccountHolder UserAccount { get; set; }
         public virtual AccountHolder ReceiverAccount { get; set; }
 

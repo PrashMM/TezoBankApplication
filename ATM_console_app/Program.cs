@@ -1,6 +1,4 @@
-﻿
-
-using Data;
+﻿using Data;
 using Models;
 using Services;
 
@@ -11,7 +9,6 @@ class Program
     private static TransactionService transactionService;
     private static JsonFileService jsonFileService;
     private static DatabaseService databaseService;
-   
 
     public static void Main()
     {
@@ -30,7 +27,7 @@ class Program
         jsonFileService.CheckAndUpdateFile(AccountData.AccountHoldersDetails, Constants.filePath);
         jsonFileService.CheckAndUpdateFile(AccountData.Transactions, Constants.filePathForTransaction);
 
-        databaseService.CreateTable();
+        databaseService.CreateAccountHolderTable();
         databaseService.CreateTransactionsTable();
     }
 
@@ -178,14 +175,12 @@ class Program
                             {
                                 Console.WriteLine(Constants.amountIs0orLess);
                             }
-
                             break;
 
                         case ATMOperation.Withdraw:
 
 
                             Console.WriteLine(Constants.enterAmountToDebit);
-
                             if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && accountHolder.AccountDetails.Balance > amountToWithdraw)
                             {
                                 accountDetailsService.UpdateLastModifiedTime(accountHolder);
@@ -216,7 +211,7 @@ class Program
                                         {
                                             accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             accountDetailsService.UpdateName(accountHolder, newName);
-                                            Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
+                                            Console.WriteLine($"Your name '{oldName}' is updated to '{accountHolder.CustomerDetails.FullName}' ");
                                             break;
                                         }
                                         else

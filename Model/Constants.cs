@@ -5,6 +5,7 @@
         public static string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         public static string filePath = Path.Combine(folderPath, "AtmAccHolder1.json");
         public static string filePathForTransaction = Path.Combine(folderPath, "AtmTransaction1.json");
+
         public const string welcomeMessage = "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\nHello Sir/Madam, Welcome to ATM Bank\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
         public const string seperateLine = "--------------------------------------------------";
         public const string chooseOperation = "Choose Any Below Options to Proceed\n Press 1 to Open your account\n Press 2 to Login to your account \n Press 3 to Exit";
