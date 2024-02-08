@@ -1,8 +1,8 @@
 ﻿using Data;
 using Models;
 
-class UserInputOutput
-   {
+    public class UserInputOutput
+    {
         public bool IsAccountDetailsCorrect(AccountHolder holder, string dataIsCorrect)
         {
             Console.WriteLine(Constants.seperateLine);
@@ -16,60 +16,86 @@ class UserInputOutput
             Console.WriteLine(Constants.ifCorrectPressYToProcced);
         }
 
-         public string GenerateAccountNumber(AccountHolder holder)
+        public string GenerateAccountNumber(AccountHolder holder)
         {
             var uniqueValue = holder.CustomerDetails.MobileNumber.ToString();
-            holder.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[0]}{uniqueValue[0]}{uniqueValue[1]}";
-            return holder.AccountDetails.AccountNumber;
+            holder.CustomerDetails.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[0]}{uniqueValue[0]}{uniqueValue[1]}";
+            return holder.CustomerDetails.AccountDetails.AccountNumber;
         }
         public void HelpService()
         {
-             Console.WriteLine(Constants.writeEmailandQuery);
-             Console.ReadLine();
-             Console.WriteLine(Constants.teamWillReachOutToYou);
+            Console.WriteLine(Constants.writeEmailandQuery);
+            Console.ReadLine();
+            Console.WriteLine(Constants.teamWillReachOutToYou);
         }
 
-    public void DisplayAllAccountHolders()
-    {
-        Console.WriteLine("Account Holders : ");
-        foreach (var accountHolder in AccountData.AccountHoldersDetails)
+        public void DisplayAllAccountHolders()
         {
-            Console.WriteLine(Constants.seperateLine);
-            Console.WriteLine($"Account Number: {accountHolder.AccountDetails.AccountNumber}");
-            Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
-            Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
-            Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
-            Console.WriteLine($"Created at: {accountHolder.CreatedOn}");
-            Console.WriteLine($"Last Modified at : {accountHolder.LastModifiedOn}");
-            Console.WriteLine(Constants.seperateLine);
-            Console.WriteLine();
+            Console.WriteLine("Account Holders : ");
+
+        //foreach (var accountHolder in AccountData.AccountHoldersDetails)
+        //{
+        //    Console.WriteLine(Constants.seperateLine);
+        //    Console.WriteLine($"Account Number: {accountHolder.AccountDetails.AccountNumber}");
+        //    Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
+        //    Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
+        //    Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
+        //    Console.WriteLine($"Created on: {accountHolder.CreatedOn}");
+        //    Console.WriteLine($"Last Modified on : {accountHolder.LastModifiedOn}");
+        //    Console.WriteLine(Constants.seperateLine);
+        //    Console.WriteLine();
+        //}
+
+          using (var context = new AccountHolderDbContext())
+          {
+            foreach (var item in context.customers)
+            {
+                    Console.WriteLine(Constants.seperateLine);
+                    Console.WriteLine($"Account Number: {item.AccountHolderId}");
+                    Console.WriteLine($"Full Name: {item.FullName}");
+                    Console.WriteLine($"Mobile Number: {item.MobileNumber}");
+                    Console.WriteLine(Constants.seperateLine);
+                    Console.WriteLine();
+            }
+            
+          }
         }
-    }
 
     public static void PrintAmount(AccountHolder accountHolder)
     {
-        Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
-        Console.WriteLine(Constants.thankYou);
+        // Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.CustomerDetails.AccountDetails.Balance}");
+         //   Console.WriteLine(Constants.thankYou);
+
+        using (var context = new AccountHolderDbContext())
+        {
+          var holder =  context.account.FirstOrDefault(e => e.AccountHolderId == accountHolder.AccountHolderId);
+            Console.WriteLine($"{Constants.yourBalanceIs} {holder.Balance}");
+            Console.WriteLine(Constants.thankYou);
+        }
     }
 
-    public static void DisplayTransationHistory(Transaction transaction)
-    {
+        public static void DisplayTransationHistory(Transaction transaction)
+        {
             switch (transaction.Type)
             {
                 case TransferType.Transfer:
-                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccount.AccountDetails.AccountNumber} to {transaction.ReceiverAccount.AccountDetails.AccountNumber}");
-                    break;
+                //     Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccount.CustomerDetails.AccountDetails.AccountNumber} to {transaction.ReceiverAccount.CustomerDetails.AccountDetails.AccountNumber}");
+                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccountId} to {transaction.ReceiverAccountId}");
+
+                break;
 
                 case TransferType.Credit:
-                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccount.AccountDetails.AccountNumber}");
-                    break;
+                //    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccount.CustomerDetails.AccountDetails.AccountNumber}");
+                Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccountId}");
+                break;
 
                 default:
-                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been debited from {transaction.UserAccount.AccountDetails.AccountNumber}");
-                    break;
+                //  Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been debited from {transaction.UserAccount.CustomerDetails.AccountDetails.AccountNumber}");
+                Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been debited from {transaction.ReceiverAccountId}");
+                break;
             }
-    }
+        }
 
-    
-}
+
+    }
 
