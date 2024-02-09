@@ -27,10 +27,6 @@ namespace Data.Migrations
                     b.Property<string>("AccountNumber")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AccountHolderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double>("Balance")
                         .HasColumnType("float");
 
@@ -39,30 +35,10 @@ namespace Data.Migrations
                     b.ToTable("account");
                 });
 
-            modelBuilder.Entity("Models.AccountHolder", b =>
-                {
-                    b.Property<string>("AccountHolderId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("AccountHolderId");
-
-                    b.ToTable("accountHolder");
-                });
-
             modelBuilder.Entity("Models.Address", b =>
                 {
-                    b.Property<string>("AddressId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AccountHolderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -72,14 +48,14 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AddressId");
+                    b.HasKey("Id");
 
                     b.ToTable("addresses");
                 });
 
             modelBuilder.Entity("Models.Customer", b =>
                 {
-                    b.Property<string>("CustomerId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AadharNumber")
@@ -89,16 +65,16 @@ namespace Data.Migrations
                     b.Property<string>("AccountDetailsAccountNumber")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AccountHolderId")
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AddressId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AccountHolderId1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AddressDetailsAddressId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -107,34 +83,53 @@ namespace Data.Migrations
                     b.Property<double>("InitialAmount")
                         .HasColumnType("float");
 
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MobileNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CustomerId");
+                    b.Property<string>("TezoBankId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AccountDetailsAccountNumber");
 
-                    b.HasIndex("AccountHolderId")
-                        .IsUnique();
+                    b.HasIndex("AddressId");
 
-                    b.HasIndex("AccountHolderId1");
-
-                    b.HasIndex("AddressDetailsAddressId");
+                    b.HasIndex("TezoBankId");
 
                     b.ToTable("customers");
                 });
 
+            modelBuilder.Entity("Models.TezoBank", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("tezoBank");
+                });
+
             modelBuilder.Entity("Models.Transaction", b =>
                 {
-                    b.Property<string>("TransactionId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
                     b.Property<string>("ReceiverAccountId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime2");
@@ -144,9 +139,13 @@ namespace Data.Migrations
 
                     b.Property<string>("UserAccountId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("TransactionId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverAccountId");
+
+                    b.HasIndex("UserAccountId");
 
                     b.ToTable("transaction");
                 });
@@ -157,32 +156,51 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("AccountDetailsAccountNumber");
 
-                    b.HasOne("Models.AccountHolder", null)
-                        .WithOne("CustomerDetails")
-                        .HasForeignKey("Models.Customer", "AccountHolderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.AccountHolder", null)
-                        .WithMany("CustomerDetailss")
-                        .HasForeignKey("AccountHolderId1");
-
                     b.HasOne("Models.Address", "AddressDetails")
                         .WithMany()
-                        .HasForeignKey("AddressDetailsAddressId")
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Models.TezoBank", null)
+                        .WithMany("CustomerDetailss")
+                        .HasForeignKey("TezoBankId");
 
                     b.Navigation("AccountDetails");
 
                     b.Navigation("AddressDetails");
                 });
 
-            modelBuilder.Entity("Models.AccountHolder", b =>
+            modelBuilder.Entity("Models.TezoBank", b =>
                 {
-                    b.Navigation("CustomerDetails")
+                    b.HasOne("Models.Customer", "CustomerDetails")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("CustomerDetails");
+                });
+
+            modelBuilder.Entity("Models.Transaction", b =>
+                {
+                    b.HasOne("Models.Customer", "ReceiverAccount")
+                        .WithMany()
+                        .HasForeignKey("ReceiverAccountId");
+
+                    b.HasOne("Models.Customer", "UserAccount")
+                        .WithMany()
+                        .HasForeignKey("UserAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReceiverAccount");
+
+                    b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Models.TezoBank", b =>
+                {
                     b.Navigation("CustomerDetailss");
                 });
 #pragma warning restore 612, 618

@@ -5,8 +5,7 @@ namespace Models
     public class Account
     {
         [Key]
-        public string AccountNumber { get; set; }
+        public string AccountNumber { get; set; }             // Primary Key
         public double Balance { get; set; }
-        public string AccountHolderId { get; set; }
     }
 }

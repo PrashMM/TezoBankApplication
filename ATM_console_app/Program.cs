@@ -118,13 +118,14 @@ class Program
 
         Console.WriteLine(Constants.seperateLine);
 
-        var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
+        var accountHolderDetails = new Customer(fullName, mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
 
         userInputOutputService.ShowAccountDetails(accountHolderDetails);
         var dataIsCorrect = Console.ReadLine();
         if (userInputOutputService.IsAccountDetailsCorrect(accountHolderDetails, dataIsCorrect))
         {
-            accountDetailsService.AddHolderDetails(accountHolderDetails);
+          var tezoData = new TezoBank(accountHolderDetails.AccountNumber, accountHolderDetails);
+            accountDetailsService.AddHolderDetails(tezoData);
             AccountOperation();
         }
         else
@@ -180,7 +181,7 @@ class Program
                             Console.WriteLine(Constants.enterAmountToDebit);
 
                             using  (var context = new AccountHolderDbContext()){
-                                var holderAccount = context.account.FirstOrDefault(e => e.AccountHolderId == accountHolder.AccountHolderId);
+                                var holderAccount = context.account.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
                                // if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && accountHolder.CustomerDetails.AccountDetails.Balance > amountToWithdraw)
                                 if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && holderAccount.Balance > amountToWithdraw)
                                 {
@@ -254,7 +255,7 @@ class Program
                                 Console.WriteLine(Constants.enterAccountNumtoTransferAmount);
                                 var receiverAccountNumber = Console.ReadLine();
                                 var receiverAccount = accountDetailsService.GetAccountHolderByAccNumber(receiverAccountNumber);
-                                if (receiverAccount != null && receiverAccount.AccountHolderId != accountHolder.AccountHolderId)
+                                if (receiverAccount != null && receiverAccount.Id != accountHolder.Id)
                                 // if (receiverAccount != null && receiverAccount.CustomerDetails.AccountDetails.AccountNumber.ToString() != accountHolder.CustomerDetails.AccountDetails.AccountNumber.ToString())
                                 {
                                     Console.WriteLine(Constants.enterAmountToTransfer);

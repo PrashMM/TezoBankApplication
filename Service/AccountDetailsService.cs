@@ -1,5 +1,4 @@
 ﻿
-
 using Data;
 using Models;
 using Services.Interfaces;
@@ -17,33 +16,32 @@ namespace Services
             transactionService = new TransactionService();
             jsonFileService = new JsonFileService();
         }
-        public void AddHolderDetails(AccountHolder holder)
+        public void AddHolderDetails(TezoBank holder)
         {
             using (var context = new AccountHolderDbContext())
             {
-                AccountData.AccountHoldersDetails.Add(holder);
+                AccountData.AccountHoldersDetails.Add(holder.CustomerDetails);
                 jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
 
-                holder.AccountHolderId = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.AccountHolderId = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.AccountDetails.AccountHolderId = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.CustomerId = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.AddressDetails.AddressId = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.AddressDetails.AccountHolderId = holder.CustomerDetails.AccountDetails.AccountNumber;
+                holder.Id = holder.CustomerDetails.AccountDetails.AccountNumber;
+                holder.CustomerDetails.AccountNumber = holder.CustomerDetails.AccountDetails.AccountNumber;
+                holder.CustomerDetails.Id = holder.CustomerDetails.AccountDetails.AccountNumber;
+                holder.CustomerDetails.AddressId = holder.CustomerDetails.AccountDetails.AccountNumber;
+                holder.CustomerDetails.AddressDetails.Id = holder.CustomerDetails.AccountDetails.AccountNumber;
 
-                context.accountHolder.Add(holder);
+                context.tezoBank.Add(holder);
                 context.SaveChanges();
             }
         }
 
-        public void UpdateName(AccountHolder accountHolder, string newName)
+        public void UpdateName(Customer accountHolder, string newName)
         {
             using (var context = new AccountHolderDbContext())
             {
                 //accountHolder.CustomerDetails.FullName = newName ?? "";
                 //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
 
-                var accHolder = context.customers.FirstOrDefault(e => e.CustomerId == accountHolder.AccountHolderId);
+                var accHolder = context.customers.FirstOrDefault(c => c.Id == accountHolder.Id);
                 if(accHolder != null)
                 {
                     accHolder.FullName = newName ?? "";
@@ -52,14 +50,14 @@ namespace Services
             }
         }
 
-        public void UpdateAddress(AccountHolder accountHolder, string newAddress)
+        public void UpdateAddress(Customer accountHolder, string newAddress)
         {
             using (var context = new AccountHolderDbContext())
             {
                 //accountHolder.CustomerDetails.AddressDetails.Location = newAddress ?? "";
                 //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
 
-                var accHolder = context.addresses.FirstOrDefault(e => e.AddressId == accountHolder.AccountHolderId);
+                var accHolder = context.addresses.FirstOrDefault(a => a.Id == accountHolder.Id);
                 if (accHolder != null)
                 {
                     accHolder.Location = newAddress ?? "";
@@ -68,7 +66,7 @@ namespace Services
             }
         }
 
-        public AccountHolder GetAccountHolderByAccNumber(string accountNum)
+        public Customer GetAccountHolderByAccNumber(string accountNum)
         {
             using (var context = new AccountHolderDbContext())
             {
@@ -76,13 +74,13 @@ namespace Services
                 //var accHolder =  context.accountHolder.Find(e => e.CustomerDetails.AccountDetails.AccountNumber.Equals(accountNum));
                 //return accHolder;
 
-                var accHolder = context.accountHolder.FirstOrDefault(e => e.CustomerDetails.AccountDetails.AccountNumber == accountNum);
+                var accHolder = context.customers.FirstOrDefault(e => e.AccountDetails.AccountNumber == accountNum);
                 return accHolder;
             }
         }
 
 
-        public void PerformDeposit(AccountHolder accountHolder, int amount)
+        public void PerformDeposit(Customer accountHolder, int amount)
         {
             using (var context = new AccountHolderDbContext())
             {
@@ -91,7 +89,7 @@ namespace Services
                 //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
                 //jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
 
-                var holderAccount = context.account.FirstOrDefault(e => e.AccountHolderId == accountHolder.AccountHolderId);
+                var holderAccount = context.account.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
                 if (holderAccount!= null)
                 {                          
                     holderAccount.Balance += amount;
@@ -101,7 +99,7 @@ namespace Services
             }
         }
 
-        public void PerformWithdraw(AccountHolder accountHolder, int amount)
+        public void PerformWithdraw(Customer accountHolder, int amount)
         {
             using (var context = new AccountHolderDbContext())
             {
@@ -110,7 +108,7 @@ namespace Services
                 //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
                 //jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
 
-                var holderAccount = context.account.FirstOrDefault(e => e.AccountHolderId == accountHolder.AccountHolderId);
+                var holderAccount = context.account.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
                 if (holderAccount != null)
                 {
                     holderAccount.Balance -= amount;
@@ -129,7 +127,7 @@ namespace Services
             }
         }
 
-        public void PerformTransferAmount(AccountHolder userAccount, AccountHolder receiverAccount, int transferAmount)
+        public void PerformTransferAmount(Customer userAccount, Customer receiverAccount, int transferAmount)
         {
             //userAccount.CustomerDetails.AccountDetails.Balance -= transferAmount;
             //receiverAccount.CustomerDetails.AccountDetails.Balance += transferAmount;
@@ -140,8 +138,8 @@ namespace Services
 
             using(var context= new AccountHolderDbContext())
             {
-                var userAcc =  context.account.FirstOrDefault(e => e.AccountHolderId == userAccount.AccountHolderId);
-                var receiverAcc = context.account.FirstOrDefault(e => e.AccountHolderId == receiverAccount.AccountHolderId);
+                var userAcc =  context.account.FirstOrDefault(e => e.AccountNumber == userAccount.Id);
+                var receiverAcc = context.account.FirstOrDefault(e => e.AccountNumber == receiverAccount.Id);
                 userAcc.Balance -= transferAmount;
                 receiverAcc.Balance += transferAmount;
                 context.SaveChanges();
@@ -150,12 +148,12 @@ namespace Services
             }
         }
 
-        public void UpdateLastModifiedTime(AccountHolder accountHolder)
+        public void UpdateLastModifiedTime(Customer accountHolder)
         {
             using (var context = new AccountHolderDbContext())
             {
                 accountHolder.LastModifiedOn = DateTime.UtcNow;
-                var holder = context.accountHolder.FirstOrDefault(e => e.AccountHolderId == accountHolder.AccountHolderId);
+                var holder = context.customers.FirstOrDefault(e => e.Id == accountHolder.Id);
                 holder.LastModifiedOn = DateTime.UtcNow;
                 context.SaveChanges();
             }            

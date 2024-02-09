@@ -6,7 +6,7 @@ namespace Services.Interfaces
     {
         public bool CheckTransactionHistoryIsEmptyOrNot();
         public void AddToTransactionHistory(Transaction newTransaction);
-        public List<Transaction> CurrentHolderTransactionHistory(AccountHolder accountHolder);
-        public void CreateTransactionHistory(int amount, AccountHolder holder, TransferType type, AccountHolder receieverAccount);
+        public List<Transaction> CurrentHolderTransactionHistory(Customer accountHolder);
+        public void CreateTransactionHistory(int amount, Customer holder, TransferType type, Customer receieverAccount);
     }
 }

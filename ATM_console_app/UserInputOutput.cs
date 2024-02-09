@@ -3,24 +3,24 @@ using Models;
 
     public class UserInputOutput
     {
-        public bool IsAccountDetailsCorrect(AccountHolder holder, string dataIsCorrect)
+        public bool IsAccountDetailsCorrect(Customer holder, string dataIsCorrect)
         {
             Console.WriteLine(Constants.seperateLine);
             return dataIsCorrect.ToLower().Equals("y");
         }
 
-        public void ShowAccountDetails(AccountHolder holder)
+        public void ShowAccountDetails(Customer holder)
         {
             Console.WriteLine(Constants.checkAllDetails);
-            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Location: {holder.CustomerDetails.AddressDetails.Location} \n*+*+* Pincode: {holder.CustomerDetails.AddressDetails.Pincode} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
+            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.FullName} \n*+*+* Mobile Number:{holder.MobileNumber} \n*+*+* Location: {holder.AddressDetails.Location} \n*+*+* Pincode: {holder.AddressDetails.Pincode} \n*+*+* Aadhar Number = {holder.AadharNumber} ");
             Console.WriteLine(Constants.ifCorrectPressYToProcced);
         }
 
-        public string GenerateAccountNumber(AccountHolder holder)
+        public string GenerateAccountNumber(Customer holder)
         {
-            var uniqueValue = holder.CustomerDetails.MobileNumber.ToString();
-            holder.CustomerDetails.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[0]}{uniqueValue[0]}{uniqueValue[1]}";
-            return holder.CustomerDetails.AccountDetails.AccountNumber;
+            var uniqueValue = holder.MobileNumber.ToString();
+            holder.AccountDetails.AccountNumber = $"ACCX{holder.FullName[0]}{uniqueValue[0]}{uniqueValue[1]}";
+            return holder.AccountDetails.AccountNumber;
         }
         public void HelpService()
         {
@@ -48,12 +48,14 @@ using Models;
 
           using (var context = new AccountHolderDbContext())
           {
-            foreach (var item in context.customers)
+            foreach (var customer in context.customers)
             {
                     Console.WriteLine(Constants.seperateLine);
-                    Console.WriteLine($"Account Number: {item.AccountHolderId}");
-                    Console.WriteLine($"Full Name: {item.FullName}");
-                    Console.WriteLine($"Mobile Number: {item.MobileNumber}");
+                    Console.WriteLine($"Account Number: {customer.Id}");
+                    Console.WriteLine($"Full Name: {customer.FullName}");
+                    Console.WriteLine($"Mobile Number: {customer.MobileNumber}");
+                    Console.WriteLine($"Created on: {customer.CreatedOn}");
+                    Console.WriteLine($"Last Modified on : {customer.LastModifiedOn}");
                     Console.WriteLine(Constants.seperateLine);
                     Console.WriteLine();
             }
@@ -61,14 +63,14 @@ using Models;
           }
         }
 
-    public static void PrintAmount(AccountHolder accountHolder)
+    public static void PrintAmount(Customer accountHolder)
     {
         // Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.CustomerDetails.AccountDetails.Balance}");
          //   Console.WriteLine(Constants.thankYou);
 
         using (var context = new AccountHolderDbContext())
         {
-          var holder =  context.account.FirstOrDefault(e => e.AccountHolderId == accountHolder.AccountHolderId);
+          var holder =  context.account.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
             Console.WriteLine($"{Constants.yourBalanceIs} {holder.Balance}");
             Console.WriteLine(Constants.thankYou);
         }

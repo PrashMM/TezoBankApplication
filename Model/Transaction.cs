@@ -7,15 +7,20 @@ namespace Models
     public class Transaction
     {
         [Key]
-        public string TransactionId { get; set; }
+        public string Id { get; set; }
         public DateTime Time { get; set; }
         public double Amount { get; set; }
 
-        public string UserAccountId { get; set; }
 
-       // public AccountHolder UserAccount { get; set; }
+        [ForeignKey("Customer")]
+        public string UserAccountId { get; set; }
+        public virtual Customer UserAccount { get; set; }
+
+
+        [ForeignKey("Customer")]
         public string? ReceiverAccountId { get; set; }
-       //public AccountHolder? ReceiverAccount { get; set; }
+        public virtual Customer? ReceiverAccount { get; set; }
+
         public TransferType Type { get; set; }
 
 
@@ -23,13 +28,13 @@ namespace Models
         {
         }
 
-        public Transaction(DateTime time, double amount, AccountHolder userAccount, TransferType type, AccountHolder receiverAccount = null)
+        public Transaction(DateTime time, double amount, Customer userAccount, TransferType type, Customer receiverAccount = null)
         {
             Time = time;
             Amount = amount;
-           // UserAccount = userAccount;
+            //UserAccount = userAccount;
             Type = type;
-           // ReceiverAccount = receiverAccount;
+            //ReceiverAccount = receiverAccount;
         }
     }
 }
