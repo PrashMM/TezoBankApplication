@@ -2,6 +2,7 @@
 
 using Data;
 using Models;
+using Models.Models;
 using Services;
 
 class Program
@@ -10,12 +11,12 @@ class Program
     private static UserInputOutput userInputOutputService;
     private static TransactionService transactionService;
     private static JsonFileService jsonFileService;
-   
+
 
     public static void Main()
     {
         InitializeServices();
-        WelcomeMenu();       
+        WelcomeMenu();
     }
 
     private static void InitializeServices()
@@ -25,8 +26,8 @@ class Program
         transactionService = new TransactionService();
         jsonFileService = new JsonFileService();
 
-        jsonFileService.CheckAndUpdateFile(AccountData.AccountHoldersDetails, Constants.filePath);
-        jsonFileService.CheckAndUpdateFile(AccountData.Transactions, Constants.filePathForTransaction);
+        //jsonFileService.CheckAndUpdateFile(AccountData.AccountHoldersDetails, Constants.filePath);
+        //jsonFileService.CheckAndUpdateFile(AccountData.Transactions, Constants.filePathForTransaction);
     }
 
     public static void WelcomeMenu()
@@ -118,13 +119,14 @@ class Program
 
         Console.WriteLine(Constants.seperateLine);
 
-        var accountHolderDetails = new AccountHolder(fullName, mobileNumber, address, pinCode, aadharNumber, "", initialAmount: 1000, balance: 1000);
+        var accountHolderDetails = new Customer(fullName, mobileNumber, address, pinCode, aadharNumber, "", balance: 1000, initialAmount: 1000);
 
         userInputOutputService.ShowAccountDetails(accountHolderDetails);
         var dataIsCorrect = Console.ReadLine();
         if (userInputOutputService.IsAccountDetailsCorrect(accountHolderDetails, dataIsCorrect))
         {
-            accountDetailsService.AddHolderDetails(accountHolderDetails);
+            var tezoData = new TezoBank(accountHolderDetails.AccountNumber, accountHolderDetails);
+            accountDetailsService.AddHolderDetails(tezoData);
             AccountOperation();
         }
         else
@@ -132,7 +134,7 @@ class Program
             // break; 
             return;
         }
-        
+
     }
 
     private static void AccountOperation()
@@ -143,7 +145,7 @@ class Program
         var accountHolder = accountDetailsService.GetAccountHolderByAccNumber(accountNumber);
 
         while (true)
-         {
+        {
             if (accountHolder != null)
             {
                 Console.WriteLine(Constants.seperateLine);
@@ -154,9 +156,9 @@ class Program
                     switch (GetATMService(userInput))
                     {
                         case ATMOperation.CheckBalance:
-                             Console.WriteLine(Constants.checkAccountBalance);
-                             UserInputOutput.PrintAmount(accountHolder);
-                             break;
+                            Console.WriteLine(Constants.checkAccountBalance);
+                            UserInputOutput.PrintAmount(accountHolder);
+                            break;
 
                         case ATMOperation.Deposit:
 
@@ -179,15 +181,20 @@ class Program
 
                             Console.WriteLine(Constants.enterAmountToDebit);
 
-                            if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && accountHolder.AccountDetails.Balance > amountToWithdraw)
+                            using (var context = new AccountHolder1Context())
                             {
-                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
-                                UserInputOutput.PrintAmount(accountHolder);
-                            }
-                            else
-                            {
-                                Console.WriteLine(Constants.cannotWithdrawMorethanCurrentbalanace);
+                                var holderAccount = context.Accounts.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
+                                // if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && accountHolder.CustomerDetails.AccountDetails.Balance > amountToWithdraw)
+                                if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && holderAccount.Balance > amountToWithdraw)
+                                {
+                                    accountDetailsService.UpdateLastModifiedTime(accountHolder);
+                                    accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
+                                    UserInputOutput.PrintAmount(accountHolder);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(Constants.cannotWithdrawMorethanCurrentbalanace);
+                                }
                             }
                             break;
 
@@ -198,18 +205,18 @@ class Program
                             switch (UpdateDetailsByInput(updateInput))
                             {
                                 case UpdateDetails.UpdateName:
-                                    
+
                                     while (true)
                                     {
                                         Console.WriteLine(Constants.enterNameToUpdate);
-                                        var oldName = accountHolder.CustomerDetails.FullName;
+                                        // var oldName = accountHolder.CustomerDetails.FullName;                                      
                                         var newName = Console.ReadLine();
-                                      
+
                                         if (!string.IsNullOrWhiteSpace(newName))
                                         {
                                             accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             accountDetailsService.UpdateName(accountHolder, newName);
-                                            Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
+                                            // Console.WriteLine($"Your name '{oldName}' is updated to {accountHolder.CustomerDetails.FullName} ");
                                             break;
                                         }
                                         else
@@ -217,22 +224,22 @@ class Program
                                             Console.WriteLine(Constants.enterValidName);
                                         }
                                     }
-                                  break;
+                                    break;
 
                                 case UpdateDetails.UpdateAddress:
 
                                     while (true)
                                     {
                                         Console.WriteLine(Constants.enterAddressToUpdate);
-                                        var oldAddress = accountHolder.CustomerDetails.AddressDetails.Location;
+                                        // var oldAddress = accountHolder.CustomerDetails.AddressDetails.Location;
                                         var newAddress = Console.ReadLine();
 
-                                   
+
                                         if (!string.IsNullOrWhiteSpace(newAddress))
                                         {
                                             accountDetailsService.UpdateLastModifiedTime(accountHolder);
                                             accountDetailsService.UpdateAddress(accountHolder, newAddress);
-                                            Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.AddressDetails.Location}");
+                                            // Console.WriteLine($"Your oldAddress '{oldAddress}' is updated to {accountHolder.CustomerDetails.AddressDetails.Location}");
                                             break;
                                         }
                                         else
@@ -250,13 +257,15 @@ class Program
                                 Console.WriteLine(Constants.enterAccountNumtoTransferAmount);
                                 var receiverAccountNumber = Console.ReadLine();
                                 var receiverAccount = accountDetailsService.GetAccountHolderByAccNumber(receiverAccountNumber);
-                                if (receiverAccount != null && receiverAccount.AccountDetails.AccountNumber.ToString() != accountHolder.AccountDetails.AccountNumber.ToString())
+                                if (receiverAccount != null && receiverAccount.Id != accountHolder.Id)
+                                // if (receiverAccount != null && receiverAccount.CustomerDetails.AccountDetails.AccountNumber.ToString() != accountHolder.CustomerDetails.AccountDetails.AccountNumber.ToString())
                                 {
                                     Console.WriteLine(Constants.enterAmountToTransfer);
-                                    if (int.TryParse(Console.ReadLine(), out var transferAmount) && transferAmount > 0 && accountHolder.AccountDetails.Balance > transferAmount)
+                                    if (int.TryParse(Console.ReadLine(), out var transferAmount) && transferAmount > 0)
+                                    // if (int.TryParse(Console.ReadLine(), out var transferAmount) && transferAmount > 0 && accountHolder.CustomerDetails.AccountDetails.Balance > transferAmount)
                                     {
-                                        accountDetailsService.PerformTransferAmount(accountHolder, receiverAccount,transferAmount);
-                                        Console.WriteLine($"Amount {transferAmount} has been successfully sent to {receiverAccount.AccountDetails.AccountNumber}. So your current balance is {accountHolder.AccountDetails.Balance}");
+                                        accountDetailsService.PerformTransferAmount(accountHolder, receiverAccount, transferAmount);
+                                        // Console.WriteLine($"Amount {transferAmount} has been successfully sent to {receiverAccount.CustomerDetails.AccountDetails.AccountNumber}. So your current balance is {accountHolder.CustomerDetails.AccountDetails.Balance}");
                                         break;
                                     }
                                     else
@@ -274,14 +283,14 @@ class Program
 
                         case ATMOperation.TransactionHistory:
                             Console.WriteLine(Constants.transactionHistory);
-                          
+
                             if (transactionService.CheckTransactionHistoryIsEmptyOrNot())
                             {
                                 var accountHolderTransactions = transactionService.CurrentHolderTransactionHistory(accountHolder);
-                               
+
                                 foreach (var transaction in accountHolderTransactions)
                                 {
-                                   UserInputOutput.DisplayTransationHistory(transaction);
+                                    UserInputOutput.DisplayTransationHistory(transaction);
                                 }
                             }
                             else
@@ -312,16 +321,17 @@ class Program
                     Console.WriteLine(e.Message);
                 }
             }
-            else {
-                
+            else
+            {
+
                 Console.WriteLine(Constants.accountNotFound);
                 break;
-       }     
+            }
 
-    }        
+        }
 
-       
- }
+
+    }
 
 
     public static MainMenu GetMainMenuByInput(int value)
