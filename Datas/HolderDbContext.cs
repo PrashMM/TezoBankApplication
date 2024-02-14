@@ -14,7 +14,7 @@ namespace Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=sql-dev; Database = accountHolder1; Trusted_Connection=True; MultipleActiveResultSets=true;  TrustServerCertificate = true; Encrypt = false");
+           optionsBuilder.UseNpgsql(@"Host=localhost; Database = accountHolder; TrustServerCertificate=True; Port = 5432; Username = postgres; Password=895185;");
         }
     }
 }

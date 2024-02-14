@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class postgre : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +15,8 @@ namespace Data.Migrations
                 name: "account",
                 columns: table => new
                 {
-                    AccountNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Balance = table.Column<double>(type: "float", nullable: false)
+                    AccountNumber = table.Column<string>(type: "text", nullable: false),
+                    Balance = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,9 +27,9 @@ namespace Data.Migrations
                 name: "addresses",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Pincode = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Location = table.Column<string>(type: "text", nullable: false),
+                    Pincode = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -40,17 +40,16 @@ namespace Data.Migrations
                 name: "customers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MobileNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AadharNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddressId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AccountDetailsAccountNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    InitialAmount = table.Column<double>(type: "float", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TezoBankId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    FullName = table.Column<string>(type: "text", nullable: false),
+                    MobileNumber = table.Column<string>(type: "text", nullable: false),
+                    AadharNumber = table.Column<string>(type: "text", nullable: false),
+                    AddressId = table.Column<string>(type: "text", nullable: false),
+                    AccountNumber = table.Column<string>(type: "text", nullable: false),
+                    AccountDetailsAccountNumber = table.Column<string>(type: "text", nullable: true),
+                    InitialAmount = table.Column<double>(type: "double precision", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,8 +71,8 @@ namespace Data.Migrations
                 name: "tezoBank",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    CustomerId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,12 +89,12 @@ namespace Data.Migrations
                 name: "transaction",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Amount = table.Column<double>(type: "float", nullable: false),
-                    UserAccountId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ReceiverAccountId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Amount = table.Column<double>(type: "double precision", nullable: false),
+                    UserAccountId = table.Column<string>(type: "text", nullable: false),
+                    ReceiverAccountId = table.Column<string>(type: "text", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,11 +123,6 @@ namespace Data.Migrations
                 column: "AddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_customers_TezoBankId",
-                table: "customers",
-                column: "TezoBankId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_tezoBank_CustomerId",
                 table: "tezoBank",
                 column: "CustomerId");
@@ -142,44 +136,25 @@ namespace Data.Migrations
                 name: "IX_transaction_UserAccountId",
                 table: "transaction",
                 column: "UserAccountId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_customers_tezoBank_TezoBankId",
-                table: "customers",
-                column: "TezoBankId",
-                principalTable: "tezoBank",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_customers_account_AccountDetailsAccountNumber",
-                table: "customers");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_customers_addresses_AddressId",
-                table: "customers");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_customers_tezoBank_TezoBankId",
-                table: "customers");
+            migrationBuilder.DropTable(
+                name: "tezoBank");
 
             migrationBuilder.DropTable(
                 name: "transaction");
+
+            migrationBuilder.DropTable(
+                name: "customers");
 
             migrationBuilder.DropTable(
                 name: "account");
 
             migrationBuilder.DropTable(
                 name: "addresses");
-
-            migrationBuilder.DropTable(
-                name: "tezoBank");
-
-            migrationBuilder.DropTable(
-                name: "customers");
         }
     }
 }
