@@ -1,18 +1,14 @@
 ﻿using Models;
 using Services;
 using Services.Interfaces;
+using System.Diagnostics.Metrics;
+using System.Numerics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class RegisterNewHolder
 {
-    //private static AccountDetailsService accountDetailsService;
-    //private static UserInputOutput userInputOutputService;
     private static IAccountDetailsService accountDetailsService = new AccountDetailsService();
     private static UserInputOutput userInputOutputService = new UserInputOutput();
-    //public RegisterNewHolder()
-    //{
-    //    accountDetailsService = new AccountDetailsService();
-    //    userInputOutputService = new UserInputOutput();
-    //}
 
     public static void OpenNewAccount()
     {
@@ -21,275 +17,77 @@ public class RegisterNewHolder
 
         Console.WriteLine(Constants.seperateLine);
 
-        // First Name
-        string firstName;
-        while (true)
+        string firstName = EnterRequiredDetails("First");
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string lastName = EnterLastName();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        int age = EnterAge();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        Gender gender = SelectGenderFromOptions();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string mobileNumber = EnterMobileNumber();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string streetAddress = EnterRequiredDetails("Street");
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string city = EnterRequiredDetails("City"); ;
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string state = EnterRequiredDetails("State");
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        int pinCode = EnterRequiredData("Postal code", 6);
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        int aadharNumber = EnterRequiredData("Aadhar", 8);
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string panCard = EnterPancard();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string email = EnterEmail();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        string occupation = EnterOccupation();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        double initialAmount = AddInitialAmount();
+        double balance = initialAmount;
+
+        Console.WriteLine(Constants.seperatedivider);
+
+        AccountType accountType = ChooseAccountType();
+
+        Console.WriteLine(Constants.seperatedivider);
+
+
+        var newHolderDetails = new AccountHolder(firstName, lastName ?? "", age, gender, aadharNumber, panCard, occupation ?? "", mobileNumber, email, streetAddress, city, state, pinCode, "", initialAmount, balance, accountType);
+
+        userInputOutputService.ShowAccountDetails(newHolderDetails);
+
+        var IsDetailsCorrect = Console.ReadLine();
+
+        if (userInputOutputService.IsAccountDetailsCorrect(newHolderDetails, IsDetailsCorrect))
         {
-            Console.WriteLine(Constants.enterYourFirstName);
-            firstName = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(firstName) || firstName.Length < 3)
-            {
-                Console.WriteLine(Constants.enterValidName);
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Last Name
-        Console.WriteLine(Constants.enterYourLastName);
-        var lastName = Console.ReadLine();
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Age
-        int age;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterYourAge);
-            if (int.TryParse(Console.ReadLine(), out var number) && 8 < number && 100 > number)
-            {
-                age = number;
-                break;
-            }
-            else
-            {
-                Console.WriteLine(Constants.enteredInvalidAge);
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Gender
-        Gender gender;
-        while (true)
-        {
-            Console.WriteLine(Constants.chooseGender);
-
-            if (int.TryParse(Console.ReadLine(), out int genderOption) && 1 <= genderOption && genderOption <= 3)
-            {
-                gender = SelectGender(genderOption);
-                break;
-            }
-            else
-            {
-                Console.WriteLine(Constants.enteredInvalidOption);
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Mobile Number
-        string mobileNumber;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterMobileNumber);
-            mobileNumber = Console.ReadLine();
-            if (accountDetailsService.MobileNumberExistsOrNot(mobileNumber) || (string.IsNullOrEmpty(mobileNumber) || mobileNumber.Length < 10 || mobileNumber.Length > 12))
-            {
-                Console.WriteLine(Constants.incorrectMobileNumber);
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Street Address
-        string streetAddress;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterStreetAddress);
-            var street = Console.ReadLine();
-            if (string.IsNullOrEmpty(street) || street.Length < 2)
-            {
-                Console.WriteLine(Constants.invalidStreetAddress);
-            }
-            else
-            {
-                streetAddress = street;
-                break;
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // City
-        string city;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterYourCiy);
-            var cityName = Console.ReadLine();
-            if (string.IsNullOrEmpty(cityName) || cityName.Length < 3)
-            {
-                Console.WriteLine(Constants.enterValidCityName);
-            }
-            else
-            {
-                city = cityName;
-                break;
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // State
-        string state;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterState);
-            var stateName = Console.ReadLine();
-            if (string.IsNullOrEmpty(stateName) || stateName.Length < 3)
-            {
-                Console.WriteLine(Constants.invalidState);
-            }
-            else
-            {
-                state = stateName;
-                break;
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Pin Code
-        int pinCode;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterPostalCode);
-
-            if (int.TryParse(Console.ReadLine(), out int postalCode) && postalCode.ToString().Length == 6)
-            {
-                pinCode = postalCode;
-                break;
-            }
-            else
-            {
-                Console.WriteLine(Constants.invalidPostalCode);
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Aadhar Number
-        int aadharNumber;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterYourAadharNumber);
-
-            if (int.TryParse(Console.ReadLine(), out int aadharNum) && aadharNum.ToString().Length == 8)
-            {
-                aadharNumber = aadharNum;
-                break;
-            }
-            else
-            {
-                Console.WriteLine(Constants.invalidAAdharNumber);
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Pan Card
-        string panCard;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterPanCardNumber);
-            var panCardNumber = Console.ReadLine();
-            if (string.IsNullOrEmpty(panCardNumber) || panCardNumber.Length < 6)
-            {
-                Console.WriteLine(Constants.invalidPanCardNumber);
-            }
-            else
-            {
-                panCard = panCardNumber;
-                break;
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Email Address
-        string email;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterEmailAddress);
-            string emailAddress = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(emailAddress) ? emailAddress == "" : UserInputOutput.IsValidEmail(emailAddress))
-            {
-                email = emailAddress;
-                break;
-            }
-            else
-            {
-                Console.WriteLine(Constants.invalidEmail);
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Occupation
-        Console.WriteLine(Constants.enterOccupation);
-        var occupation = Console.ReadLine();
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Initial Amount
-        double initialAmount;
-        double balance;
-        while (true)
-        {
-            Console.WriteLine(Constants.enterInitialAmount);
-            if (int.TryParse(Console.ReadLine(), out var amount) && amount < 0)
-            {
-                Console.WriteLine(Constants.invalidAmount);
-            }
-            else
-            {
-                initialAmount = amount;
-                balance = amount;
-                break;
-            }
-        }
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-        // Account Type
-        AccountType accountType;
-        while (true)
-        {
-
-            Console.WriteLine(Constants.chooseAccoutType);
-            if (int.TryParse(Console.ReadLine(), out var type) && 1 <= type && type <= 3)
-            {
-                accountType = SelectAccountType(type);
-                break;
-            }
-            else
-            {
-                Console.WriteLine(Constants.enteredInvalidOption);
-            }
-        }
-
-
-        Console.WriteLine("-----------***----------------***--------------------***---------");
-
-
-        var newAccountHolder = new AccountHolder(firstName, lastName ?? "", age, gender, aadharNumber, panCard, occupation ?? "", mobileNumber, email, streetAddress, city, state, pinCode, "", initialAmount, balance, accountType);
-
-        userInputOutputService.ShowAccountDetails(newAccountHolder);
-
-        var dataIsCorrect = Console.ReadLine();
-
-        if (userInputOutputService.IsAccountDetailsCorrect(newAccountHolder, dataIsCorrect))
-        {
-            accountDetailsService.AddHolderDetails(newAccountHolder);
+            accountDetailsService.AddHolderDetails(newHolderDetails);
             LoginAndAccountOperation.AccountOperation();
         }
         else
@@ -300,6 +98,169 @@ public class RegisterNewHolder
 
 
     }
+
+    static string EnterRequiredDetails(string field)
+    {
+        while (true)
+        {
+            Console.WriteLine($"--> Please Enter your {field} name");
+            var value = Console.ReadLine();
+            if (string.IsNullOrEmpty(value) || value.Length < 3)
+            {
+                Console.WriteLine($"Uh ho!.Sorry Please enter valid {field} Name\n");
+            }
+            else
+            {
+                return value;
+            }
+        }
+    }
+    static string EnterLastName()
+    {
+        Console.WriteLine(Constants.enterYourLastName);
+        return Console.ReadLine();
+    }
+
+    static int EnterAge()
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterYourAge);
+            if (int.TryParse(Console.ReadLine(), out var number) && 8 < number && 100 > number)
+            {
+                return number;
+            }
+            else
+            {
+                Console.WriteLine(Constants.enteredInvalidAge);
+            }
+        }
+    }
+
+    static Gender SelectGenderFromOptions()
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.chooseGender);
+
+            if (int.TryParse(Console.ReadLine(), out int genderOption) && 1 <= genderOption && genderOption <= 3)
+            {
+                return SelectGender(genderOption);
+            }
+            else
+            {
+                Console.WriteLine(Constants.enteredInvalidOption);
+            }
+        }
+    }
+
+    static string EnterMobileNumber()
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterMobileNumber);
+            string mobileNumber = Console.ReadLine();
+            if (accountDetailsService.MobileNumberExistsOrNot(mobileNumber) || (string.IsNullOrEmpty(mobileNumber) || mobileNumber.Length < 10 || mobileNumber.Length > 12))
+            {
+                Console.WriteLine(Constants.incorrectMobileNumber);
+            }
+            else
+            {
+                return mobileNumber;
+            }
+        }
+    }
+
+    static int EnterRequiredData(string field, int value)
+    {
+        while (true)
+        {
+            Console.WriteLine($"--> Please Enter Your {field} Number");
+
+            if (int.TryParse(Console.ReadLine(), out int number) && number.ToString().Length == value)
+            {
+                return number;
+            }
+            else
+            {
+                Console.WriteLine($"Uh ho!. Please enter {value} digit valid {field} number \n");
+            }
+        }
+    }
+
+    static string EnterPancard()
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterPanCardNumber);
+            var panCardNumber = Console.ReadLine();
+            if (string.IsNullOrEmpty(panCardNumber) || panCardNumber.Length < 6)
+            {
+                Console.WriteLine(Constants.invalidPanCardNumber);
+            }
+            else
+            {
+                return panCardNumber;
+            }
+        }
+    }
+
+    static string EnterEmail()
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterEmailAddress);
+            string emailAddress = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(emailAddress) ? emailAddress == "" : UserInputOutput.IsValidEmail(emailAddress))
+            {
+                return emailAddress;
+            }
+            else
+            {
+                Console.WriteLine(Constants.invalidEmail);
+            }
+        }
+    }
+
+    static string EnterOccupation()
+    {
+        Console.WriteLine(Constants.enterOccupation);
+        return Console.ReadLine();
+    }
+
+    static double AddInitialAmount()
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterInitialAmount);
+            if (int.TryParse(Console.ReadLine(), out var amount) && amount < 0)
+            {
+                Console.WriteLine(Constants.invalidAmount);
+            }
+            else
+            {
+                return amount;
+            }
+        }
+    }
+
+    static AccountType ChooseAccountType()
+    {
+        while (true)
+        {
+
+            Console.WriteLine(Constants.chooseAccoutType);
+            if (int.TryParse(Console.ReadLine(), out var type) && 1 <= type && type <= 3)
+            {
+                return SelectAccountType(type);
+            }
+            else
+            {
+                Console.WriteLine(Constants.enteredInvalidOption);
+            }
+        }
+    }
+
     public static Gender SelectGender(int gender)
     {
 

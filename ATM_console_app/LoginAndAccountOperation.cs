@@ -9,20 +9,10 @@ class LoginAndAccountOperation
     private static ITransactionService transactionService = new TransactionService();
     private static UserInputOutput userInputOutputService = new UserInputOutput();
 
-    //private static AccountDetailsService accountDetailsService;
-    //private static UserInputOutput userInputOutputService;
-    //private static TransactionService transactionService;
-    //public LoginAndAccountOperation()
-    //{
-    //    accountDetailsService = new AccountDetailsService();
-    //    userInputOutputService = new UserInputOutput();
-    //    transactionService = new TransactionService();
-    //}
-
     public static void AccountOperation()
     {
         Console.WriteLine(Constants.seperateLine);
-        Console.WriteLine(Constants.enterAccountNumber);
+        Console.WriteLine(Constants.enterAccountNumbertoLogin);
         var accountNumber = Console.ReadLine();
         var accountHolder = accountDetailsService.GetAccountHolderByAccNumber(accountNumber);
 
@@ -30,7 +20,7 @@ class LoginAndAccountOperation
         {
             if (accountHolder != null)
             {
-                Console.WriteLine(Constants.seperateLine);
+                Console.WriteLine(Constants.seperatedivider);
                 Console.WriteLine(Constants.accountOperations);
                 int.TryParse(Console.ReadLine(), out var userInput);
                 try
@@ -43,154 +33,40 @@ class LoginAndAccountOperation
                             break;
 
                         case ATMOperation.Deposit:
-
-                            Console.WriteLine(Constants.enterAmountToCredit);
-                            if (int.TryParse(Console.ReadLine(), out var amountToDeposit) && amountToDeposit > 0)
-                            {
-                                accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
-                                UserInputOutput.PrintAmount(accountHolder);
-                            }
-                            else
-                            {
-                                Console.WriteLine(Constants.amountIs0orLess);
-                            }
-
+                            PerformDeposit(accountHolder);
                             break;
 
                         case ATMOperation.Withdraw:
-                            Console.WriteLine(Constants.enterAmountToDebit);
-
-                            using (var context = new TezoBankDbContext())
-                            {
-                                var holderAccount = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
-
-                                if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && holderAccount.Balance > amountToWithdraw)
-                                {
-                                    accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                    accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
-                                    UserInputOutput.PrintAmount(accountHolder);
-                                }
-                                else
-                                {
-                                    Console.WriteLine(Constants.cannotWithdrawMorethanCurrentbalanace);
-                                }
-                            }
+                            PerformWithdraw(accountHolder);
                             break;
 
                         case ATMOperation.EditAccountDetails:
                             Console.WriteLine(Constants.editAccountDetails);
                             Console.WriteLine(Constants.enterToUpdateDetails);
                             int.TryParse(Console.ReadLine(), out var updateInput);
+
                             switch (UpdateDetailsByInput(updateInput))
                             {
                                 case UpdateDetails.UpdateName:
-
-                                    while (true)
-                                    {
-                                        Console.WriteLine(Constants.enterNameToUpdate);
-                                        var newName = Console.ReadLine();
-
-                                        if (!string.IsNullOrWhiteSpace(newName))
-                                        {
-                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                            accountDetailsService.UpdateName(accountHolder, newName);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine(Constants.enterValidName);
-                                        }
-                                    }
+                                    UpdateName(accountHolder);
                                     break;
 
                                 case UpdateDetails.UpdateAddress:
-
-                                    while (true)
-                                    {
-                                        Console.WriteLine(Constants.enterAddressToUpdate);
-                                        var newAddress = Console.ReadLine();
-
-
-                                        if (!string.IsNullOrWhiteSpace(newAddress))
-                                        {
-                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                            accountDetailsService.UpdateAddress(accountHolder, newAddress);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine(Constants.enterValidAddress);
-                                        }
-                                    }
+                                    UpdateAddress(accountHolder);
                                     break;
 
                                 case UpdateDetails.UpdateAge:
-
-                                    while (true)
-                                    {
-                                        Console.WriteLine(Constants.enterAgetoUpdate);
-                                        if (int.TryParse(Console.ReadLine(), out var number) && 8 < number && 100 > number)
-                                        {
-                                            accountDetailsService.UpdateLastModifiedTime(accountHolder);
-                                            accountDetailsService.UpdateAge(accountHolder, number);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine(Constants.enteredInvalidAge);
-                                        }
-                                    }
+                                    UpdateAge(accountHolder);
                                     break;
                             }
                             break;
 
                         case ATMOperation.TransferAmount:
-                            while (true)
-                            {
-                                Console.WriteLine(Constants.enterAccountNumtoTransferAmount);
-                                var receiverAccountNumber = Console.ReadLine();
-                                var receiverAccount = accountDetailsService.GetAccountHolderByAccNumber(receiverAccountNumber);
-                                if (receiverAccount != null && receiverAccount.Id != accountHolder.Id)
-                                {
-                                    Console.WriteLine(Constants.enterAmountToTransfer);
-                                    using (var context = new TezoBankDbContext()) {
-                                      var holder =  context.AccountDetails.FirstOrDefault(e => e.Id == accountHolder.Id);
-                                        if (int.TryParse(Console.ReadLine(), out var transferAmount) && transferAmount > 0 && holder.Balance > transferAmount)
-                                        {
-                                            accountDetailsService.PerformTransferAmount(accountHolder, receiverAccount, transferAmount);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine(Constants.cannotTransferMorethanCurrentbalanace);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine(Constants.accNotFoundOrAccNumisSame);
-                                    break;
-                                }
-                            }
+                            PerformTransferAmount(accountHolder);
                             break;
 
                         case ATMOperation.TransactionHistory:
-                            Console.WriteLine(Constants.transactionHistory);
-
-                            if (transactionService.CheckTransactionHistoryIsEmptyOrNot())
-                            {
-                                var accountHolderTransactions = transactionService.CurrentHolderTransactionHistory(accountHolder);
-
-                                foreach (var transaction in accountHolderTransactions)
-                                {
-                                    UserInputOutput.DisplayTransationHistory(transaction);
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine(Constants.noTransactionsDone);
-                            }
+                            ShowTransactionHistory(accountHolder);
                             break;
 
                         case ATMOperation.TakeHelp:
@@ -228,6 +104,157 @@ class LoginAndAccountOperation
 
         }
     }
+
+    static void PerformDeposit(AccountHolder accountHolder)
+    {
+        Console.WriteLine(Constants.enterAmountToCredit);
+        if (int.TryParse(Console.ReadLine(), out var amountToDeposit) && amountToDeposit > 0)
+        {
+            accountDetailsService.UpdateLastModifiedTime(accountHolder);
+            accountDetailsService.PerformDeposit(accountHolder, amountToDeposit);
+            UserInputOutput.PrintAmount(accountHolder);
+        }
+        else
+        {
+            Console.WriteLine(Constants.amountIs0orLess);
+        }
+    }
+
+    static void PerformWithdraw(AccountHolder accountHolder)
+    {
+        Console.WriteLine(Constants.enterAmountToDebit);
+
+        using (var context = new TezoBankDbContext())
+        {
+            var holderAccount = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
+
+            if (int.TryParse(Console.ReadLine(), out var amountToWithdraw) && amountToWithdraw > 0 && holderAccount.Balance > amountToWithdraw)
+            {
+                accountDetailsService.UpdateLastModifiedTime(accountHolder);
+                accountDetailsService.PerformWithdraw(accountHolder, amountToWithdraw);
+                UserInputOutput.PrintAmount(accountHolder);
+            }
+            else
+            {
+                Console.WriteLine(Constants.cannotWithdrawMorethanCurrentbalanace);
+            }
+        }
+    }
+
+    static void UpdateName(AccountHolder accountHolder)
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterNameToUpdate);
+            var newName = Console.ReadLine();
+
+            if (!string.IsNullOrWhiteSpace(newName))
+            {
+                accountDetailsService.UpdateLastModifiedTime(accountHolder);
+                accountDetailsService.UpdateName(accountHolder, newName);
+                Console.WriteLine("Your Name is Updated. Thank you");
+                break;
+            }
+            else
+            {
+                Console.WriteLine(Constants.enterValidName);
+            }
+        }
+    }
+
+    static void UpdateAddress(AccountHolder accountHolder)
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterAddressToUpdate);
+            var newAddress = Console.ReadLine();
+
+
+            if (!string.IsNullOrWhiteSpace(newAddress))
+            {
+                accountDetailsService.UpdateLastModifiedTime(accountHolder);
+                accountDetailsService.UpdateAddress(accountHolder, newAddress);
+                Console.WriteLine("Your Address is Updated. Thank you");
+                break;
+            }
+            else
+            {
+                Console.WriteLine(Constants.enterValidAddress);
+            }
+        }
+    }
+
+    static void UpdateAge(AccountHolder accountHolder)
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterAgetoUpdate);
+            if (int.TryParse(Console.ReadLine(), out var number) && 8 < number && 100 > number)
+            {
+                accountDetailsService.UpdateLastModifiedTime(accountHolder);
+                accountDetailsService.UpdateAge(accountHolder, number);
+                Console.WriteLine("Your Age is Updated. Thank you");
+                break;
+            }
+            else
+            {
+                Console.WriteLine(Constants.enteredInvalidAge);
+            }
+        }
+    }
+
+    static void PerformTransferAmount(AccountHolder accountHolder)
+    {
+        while (true)
+        {
+            Console.WriteLine(Constants.enterAccountNumtoTransferAmount);
+            var receiverAccountNumber = Console.ReadLine();
+            var receiverAccount = accountDetailsService.GetAccountHolderByAccNumber(receiverAccountNumber);
+            if (receiverAccount != null && receiverAccount.Id != accountHolder.Id)
+            {
+                Console.WriteLine(Constants.enterAmountToTransfer);
+                using (var context = new TezoBankDbContext())
+                {
+                    var holder = context.AccountDetails.FirstOrDefault(e => e.Id == accountHolder.Id);
+                    if (int.TryParse(Console.ReadLine(), out var transferAmount) && transferAmount > 0 && holder.Balance > transferAmount)
+                    {
+                        accountDetailsService.PerformTransferAmount(accountHolder, receiverAccount, transferAmount);
+                        UserInputOutput.PrintAmount(accountHolder);
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine(Constants.cannotTransferMorethanCurrentbalanace);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine(Constants.accNotFoundOrAccNumisSame);
+                break;
+            }
+        }
+    }
+
+    static void ShowTransactionHistory(AccountHolder accountHolder)
+    {
+        Console.WriteLine(Constants.transactionHistory);
+
+        if (transactionService.CheckTransactionHistoryIsEmptyOrNot())
+        {
+            var accountHolderTransactions = transactionService.CurrentHolderTransactionHistory(accountHolder);
+
+            foreach (var transaction in accountHolderTransactions)
+            {
+                UserInputOutput.DisplayTransationHistory(transaction);
+            }
+        }
+        else
+        {
+            Console.WriteLine(Constants.noTransactionsDone);
+        }
+    }
+
     public static ATMOperation GetATMService(int value)
     {
         switch (value)

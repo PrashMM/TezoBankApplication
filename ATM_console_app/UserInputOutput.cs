@@ -54,7 +54,7 @@ public class UserInputOutput
         using (var context = new TezoBankDbContext())
         {
             var holder = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
-            Console.WriteLine($"{Constants.yourBalanceIs} {holder.Balance}");
+            Console.WriteLine($"*** {Constants.yourBalanceIs} {holder.Balance} Rs/-");
             Console.WriteLine(Constants.thankYou);
         }
     }
@@ -64,16 +64,16 @@ public class UserInputOutput
         switch (transaction.Type)
         {
             case TransferType.Transfer:
-                Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccountId} to {transaction.ReceiverAccountId}");
+                Console.WriteLine($"On {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccountId} to {transaction.ReceiverAccountId}");
 
                 break;
 
             case TransferType.Credit:
-                Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccountId}");
+                Console.WriteLine($"On {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccountId}");
                 break;
 
             default:
-                Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been debited from {transaction.ReceiverAccountId}");
+                Console.WriteLine($"On {transaction.Time}, {transaction.Amount} has been debited from {transaction.ReceiverAccountId}");
                 break;
         }
     }
@@ -81,7 +81,6 @@ public class UserInputOutput
     public static bool IsValidEmail(string email)
     {
         string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-
         return Regex.IsMatch(email, pattern);
     }
 

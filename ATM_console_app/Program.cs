@@ -5,22 +5,10 @@ using Services;
 
 class Program
 {
-    //private static AccountDetailsService accountDetailsService;
-    //private static UserInputOutput userInputOutputService;
-    //private static TransactionService transactionService;
     public static void Main()
     {
-        //InitializeServices();
-        WelcomeMenu();  
+        WelcomeMenu();
     }
-
-    //private static void InitializeServices()
-    //{
-    //    accountDetailsService = new AccountDetailsService();
-    //    userInputOutputService = new UserInputOutput();
-    //    transactionService = new TransactionService();
-    //}
-
     public static void WelcomeMenu()
     {
         Console.WriteLine(Constants.welcomeMessage);
@@ -37,7 +25,7 @@ class Program
                     switch (MainMenuByInput(userInput))
                     {
                         case MainMenu.OpenAccount:
-                             RegisterNewHolder.OpenNewAccount();
+                            RegisterNewHolder.OpenNewAccount();
                             break;
 
                         case MainMenu.Login:
