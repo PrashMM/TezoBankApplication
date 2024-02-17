@@ -152,7 +152,7 @@ class LoginAndAccountOperation
             {
                 accountDetailsService.UpdateLastModifiedTime(accountHolder);
                 accountDetailsService.UpdateName(accountHolder, newName);
-                Console.WriteLine("Your Name is Updated. Thank you");
+                Console.WriteLine(Constants.nameUpdated);
                 break;
             }
             else
@@ -174,7 +174,7 @@ class LoginAndAccountOperation
             {
                 accountDetailsService.UpdateLastModifiedTime(accountHolder);
                 accountDetailsService.UpdateAddress(accountHolder, newAddress);
-                Console.WriteLine("Your Address is Updated. Thank you");
+                Console.WriteLine(Constants.addressUpdated);
                 break;
             }
             else
@@ -193,7 +193,7 @@ class LoginAndAccountOperation
             {
                 accountDetailsService.UpdateLastModifiedTime(accountHolder);
                 accountDetailsService.UpdateAge(accountHolder, number);
-                Console.WriteLine("Your Age is Updated. Thank you");
+                Console.WriteLine(Constants.ageUpdated);
                 break;
             }
             else
