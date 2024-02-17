@@ -5,8 +5,10 @@ namespace Models
     public class Address
     {
         [Key]
-        public string Id { get; set; }                 // Primary Key
-        public string Location { get; set; }
-        public string Pincode { get; set; }
+        public string Id { get; set; }        
+        public string StreetAddress { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public int PostalCode { get; set; }
     }
 }

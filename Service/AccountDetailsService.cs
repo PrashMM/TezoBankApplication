@@ -9,137 +9,137 @@ namespace Services
     public class AccountDetailsService : IAccountDetailsService
     {
         private static TransactionService transactionService;
-        private static JsonFileService jsonFileService;
 
         public AccountDetailsService()
         {
             transactionService = new TransactionService();
-            jsonFileService = new JsonFileService();
-        }
-        public void AddHolderDetails(TezoBank holder)
-        {
-            using (var context = new AccountHolderDbContext())
-            {
-                AccountData.AccountHoldersDetails.Add(holder.CustomerDetails);
-                jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-
-                holder.Id = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.AccountNumber = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.Id = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.AddressId = holder.CustomerDetails.AccountDetails.AccountNumber;
-                holder.CustomerDetails.AddressDetails.Id = holder.CustomerDetails.AccountDetails.AccountNumber;
-
-                context.tezoBank.Add(holder);
-                context.SaveChanges();
-            }
         }
 
-        public void UpdateName(Customer accountHolder, string newName)
+        public void AddHolderDetails(AccountHolder holder)
         {
-            using (var context = new AccountHolderDbContext())
+            try
             {
-                //accountHolder.CustomerDetails.FullName = newName ?? "";
-                //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-
-                var accHolder = context.customers.FirstOrDefault(c => c.Id == accountHolder.Id);
-                if(accHolder != null)
+                using (var context = new TezoBankDbContext())
                 {
-                    accHolder.FullName = newName ?? "";
+                    TezoBank.AccountHolders.Add(holder);
+
+                    holder.Id = holder.AccountDetails.AccountNumber;
+
+                    holder.PersonalDetailsId = holder.AccountDetails.AccountNumber;
+                    holder.PersonalDetails.Id = holder.AccountDetails.AccountNumber;
+
+                    holder.ContactDetailsId = holder.AccountDetails.AccountNumber;
+                    holder.ContactDetails.Id = holder.AccountDetails.AccountNumber;
+                    holder.ContactDetails.AddressId = holder.AccountDetails.AccountNumber;
+                    holder.ContactDetails.Address.Id = holder.AccountDetails.AccountNumber;
+
+                    holder.AccountDetailsId = holder.AccountDetails.AccountNumber;
+                    holder.AccountDetails.Id = holder.AccountDetails.AccountNumber;
+
+                    context.AccountHolders.Add(holder);
                     context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
                 }
             }
         }
 
-        public void UpdateAddress(Customer accountHolder, string newAddress)
+        public void UpdateName(AccountHolder accountHolder, string newName)
         {
-            using (var context = new AccountHolderDbContext())
+            using (var context = new TezoBankDbContext())
             {
-                //accountHolder.CustomerDetails.AddressDetails.Location = newAddress ?? "";
-                //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-
-                var accHolder = context.addresses.FirstOrDefault(a => a.Id == accountHolder.Id);
+                var accHolder = context.PersonalDetails.FirstOrDefault(c => c.Id == accountHolder.Id);
                 if (accHolder != null)
                 {
-                    accHolder.Location = newAddress ?? "";
+                    accHolder.FirstName = newName ?? "";
                     context.SaveChanges();
                 }
             }
         }
 
-        public Customer GetAccountHolderByAccNumber(string accountNum)
+        public void UpdateAddress(AccountHolder accountHolder, string newCity)
         {
-            using (var context = new AccountHolderDbContext())
+            using (var context = new TezoBankDbContext())
             {
-                //  return AccountData.AccountHoldersDetails.Find(e => e.CustomerDetails.AccountDetails.AccountNumber.Equals(accountNum));
-                //var accHolder =  context.accountHolder.Find(e => e.CustomerDetails.AccountDetails.AccountNumber.Equals(accountNum));
-                //return accHolder;
+                var accHolder = context.Address.FirstOrDefault(a => a.Id == accountHolder.Id);
+                if (accHolder != null)
+                {
+                    accHolder.City = newCity ?? "";
+                    context.SaveChanges();
+                }
+            }
+        }
 
-                var accHolder = context.customers.FirstOrDefault(e => e.AccountDetails.AccountNumber == accountNum);
+        public void UpdateAge(AccountHolder accountHolder, int newAge)
+        {
+            using (var context = new TezoBankDbContext())
+            {
+                var accHolder = context.PersonalDetails.FirstOrDefault(a => a.Id == accountHolder.Id);
+                if (accHolder != null)
+                {
+                    accHolder.Age = newAge;
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        public AccountHolder GetAccountHolderByAccNumber(string accountNum)
+        {
+            using (var context = new TezoBankDbContext())
+            {
+                var accHolder = context.AccountHolders.FirstOrDefault(e => e.Id == accountNum);
                 return accHolder;
             }
         }
 
-
-        public void PerformDeposit(Customer accountHolder, int amount)
+        public void PerformDeposit(AccountHolder accountHolder, int amount)
         {
-            using (var context = new AccountHolderDbContext())
+            using (var context = new TezoBankDbContext())
             {
-                //accountHolder.CustomerDetails.AccountDetails.Balance += amount;
-                //transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Credit, null);
-                //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-                //jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
-
-                var holderAccount = context.account.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
-                if (holderAccount!= null)
-                {                          
+                var holderAccount = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
+                if (holderAccount != null)
+                {
                     holderAccount.Balance += amount;
                     context.SaveChanges();
                     transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Credit, null);
-                }            
+                }
             }
         }
 
-        public void PerformWithdraw(Customer accountHolder, int amount)
+        public void PerformWithdraw(AccountHolder accountHolder, int amount)
         {
-            using (var context = new AccountHolderDbContext())
+            using (var context = new TezoBankDbContext())
             {
-                //accountHolder.CustomerDetails.AccountDetails.Balance -= amount;
-                //transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Debit, null);
-                //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-                //jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
-
-                var holderAccount = context.account.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
+                var holderAccount = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
                 if (holderAccount != null)
                 {
                     holderAccount.Balance -= amount;
                     context.SaveChanges();
                     transactionService.CreateTransactionHistory(amount, accountHolder, TransferType.Debit, null);
                 }
-            }          
+            }
         }
 
         public bool MobileNumberExistsOrNot(string number)
         {
-           // return AccountData.AccountHoldersDetails.Where(e => e.CustomerDetails.MobileNumber.Equals(number)).Any();
-            using(var context = new AccountHolderDbContext())
+            using (var context = new TezoBankDbContext())
             {
-                return context.customers.Where(e => e.MobileNumber.Equals(number)).Any();
+                return context.ContactDetails.Where(e => e.MobileNumber.Equals(number)).Any();
             }
         }
 
-        public void PerformTransferAmount(Customer userAccount, Customer receiverAccount, int transferAmount)
+        public void PerformTransferAmount(AccountHolder userAccount, AccountHolder receiverAccount, int transferAmount)
         {
-            //userAccount.CustomerDetails.AccountDetails.Balance -= transferAmount;
-            //receiverAccount.CustomerDetails.AccountDetails.Balance += transferAmount;
-            //transactionService.CreateTransactionHistory(transferAmount, userAccount, TransferType.Transfer, receiverAccount);
-            //jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-            //jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
-
-
-            using(var context= new AccountHolderDbContext())
+            using (var context = new TezoBankDbContext())
             {
-                var userAcc =  context.account.FirstOrDefault(e => e.AccountNumber == userAccount.Id);
-                var receiverAcc = context.account.FirstOrDefault(e => e.AccountNumber == receiverAccount.Id);
+                var userAcc = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == userAccount.Id);
+                var receiverAcc = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == receiverAccount.Id);
                 userAcc.Balance -= transferAmount;
                 receiverAcc.Balance += transferAmount;
                 context.SaveChanges();
@@ -148,15 +148,14 @@ namespace Services
             }
         }
 
-        public void UpdateLastModifiedTime(Customer accountHolder)
+        public void UpdateLastModifiedTime(AccountHolder accountHolder)
         {
-            using (var context = new AccountHolderDbContext())
+            using (var context = new TezoBankDbContext())
             {
-                accountHolder.LastModifiedOn = DateTime.UtcNow;
-                var holder = context.customers.FirstOrDefault(e => e.Id == accountHolder.Id);
+                var holder = context.AccountHolders.FirstOrDefault(e => e.Id == accountHolder.Id);
                 holder.LastModifiedOn = DateTime.UtcNow;
                 context.SaveChanges();
-            }            
+            }
         }
     }
 }

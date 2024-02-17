@@ -32,9 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Datas\Data.csproj" />
-    <ProjectReference Include="..\Model\Models.csproj" />
-    <ProjectReference Include="..\Service\Services.csproj" />
+    <ProjectReference Include="..\Datas\TezoBankApplication.Data.csproj" />
+    <ProjectReference Include="..\Model\TezoBankApplication.Models.csproj" />
+    <ProjectReference Include="..\Service\TezoBankApplication.Services.csproj" />
   </ItemGroup>
 
 </Project>
