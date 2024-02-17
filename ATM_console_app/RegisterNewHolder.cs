@@ -1,9 +1,6 @@
 ﻿using Models;
 using Services;
 using Services.Interfaces;
-using System.Diagnostics.Metrics;
-using System.Numerics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class RegisterNewHolder
 {
