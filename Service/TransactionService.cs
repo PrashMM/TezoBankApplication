@@ -1,39 +1,54 @@
 ﻿
-using Data;
 using Models;
+using Models.Models;
 using Services.Interfaces;
 
 namespace Services
 {
     public class TransactionService : ITransactionService
     {
-        private static JsonFileService jsonFileService;
-
-        public TransactionService()
-        {
-            jsonFileService = new JsonFileService();
-        }
         public bool CheckTransactionHistoryIsEmptyOrNot()
         {
-            return AccountData.Transactions != null && AccountData.Transactions.Count != 0;
-        }
-
-        public void AddToTransactionHistory(Transaction newTransaction)
-        {
-            AccountData.Transactions.Add(newTransaction);
+            using (var context = new TezoBankContext())
+            {
+                return context.Transactions.Count() != 0 && context.Transactions != null;
+            }
         }
 
         public List<Transaction> CurrentHolderTransactionHistory(AccountHolder accountHolder)
         {
-            return AccountData.Transactions.Where(e => e.UserAccount.AccountDetails.AccountNumber.Equals(accountHolder.AccountDetails.AccountNumber)).ToList();
+            using (var context = new TezoBankContext())
+            {
+                return context.Transactions.Where(e => e.UserAccountId.Equals(accountHolder.Id)).ToList();
+            }
         }
 
-        public void CreateTransactionHistory(int amount, AccountHolder holder, TransferType type, AccountHolder receieverAccount)
+
+        public void CreateTransactionHistory(int amount, AccountHolder userAccount, TransferType type, AccountHolder receieverAccount)
         {
-            var transaction = new Transaction(DateTime.UtcNow, amount, holder, type, receieverAccount);
-            AddToTransactionHistory(transaction);
-            jsonFileService.UpdateData(AccountData.AccountHoldersDetails, Constants.filePath);
-            jsonFileService.UpdateData(AccountData.Transactions, Constants.filePathForTransaction);
+            var transaction = new Transaction(DateTime.UtcNow, amount, userAccount, type, receieverAccount);
+            try
+            {
+                using (var context = new TezoBankContext())
+                {
+                    transaction.Id = Guid.NewGuid().ToString();
+                    transaction.UserAccountId = userAccount.Id;
+                    transaction.ReceiverAccountId = (receieverAccount == null) ? userAccount.Id : receieverAccount.Id;
+
+                    context.Transactions.Add(transaction);
+                    context.SaveChanges();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+            }
+
         }
 
     }

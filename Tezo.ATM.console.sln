@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATM_console_app", "ATM_console_app\ATM_console_app.csproj", "{FC1C7972-538B-412A-B345-297D4825B85B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TezoBankApplication", "ATM_console_app\TezoBankApplication.csproj", "{FC1C7972-538B-412A-B345-297D4825B85B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Model\Models.csproj", "{BD29C5E8-EA42-4431-A1C3-66B3BBE19DC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TezoBankApplication.Models", "Model\TezoBankApplication.Models.csproj", "{BD29C5E8-EA42-4431-A1C3-66B3BBE19DC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Service\Services.csproj", "{90F08204-3539-447D-9664-348F18C68F7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TezoBankApplication.Services", "Service\TezoBankApplication.Services.csproj", "{90F08204-3539-447D-9664-348F18C68F7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Datas\Data.csproj", "{067CDE7F-8205-4A96-AE03-BF665206E4BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TezoBankApplication.Data", "Datas\TezoBankApplication.Data.csproj", "{067CDE7F-8205-4A96-AE03-BF665206E4BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

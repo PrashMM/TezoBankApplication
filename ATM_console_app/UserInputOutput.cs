@@ -1,75 +1,88 @@
-﻿using Data;
+﻿
 using Models;
+using Models.Models;
+using System.Text.RegularExpressions;
 
-class UserInputOutput
-   {
-        public bool IsAccountDetailsCorrect(AccountHolder holder, string dataIsCorrect)
-        {
-            Console.WriteLine(Constants.seperateLine);
-            return dataIsCorrect.ToLower().Equals("y");
-        }
+public class UserInputOutput
+{
+    public void ShowAccountDetails(AccountHolder holder)
+    {
+        Console.WriteLine(Constants.checkAllDetails);
+        Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.PersonalDetails.FirstName} {holder.PersonalDetails.LastName} \n*+*+* Gender:{holder.PersonalDetails.Gender} \n*+*+* Age:{holder.PersonalDetails.Age} \n*+*+* Mobile Number:{holder.ContactDetails.MobileNumber} \n*+*+* Location: {holder.ContactDetails.Address.City} {holder.ContactDetails.Address.PostalCode} \n*+*+* Initial Amount: {holder.AccountDetails.InitialAmount} \n*+*+* Aadhar Number = {holder.PersonalDetails.AadharNumber} \n*+*+* Created On:{holder.CreatedOn}");
+        Console.WriteLine(Constants.ifCorrectPressYToProcced);
+    }
 
-        public void ShowAccountDetails(AccountHolder holder)
-        {
-            Console.WriteLine(Constants.checkAllDetails);
-            Console.WriteLine($"*+*+* Account Number: {GenerateAccountNumber(holder)} \n*+*+* Name: {holder.CustomerDetails.FullName} \n*+*+* Mobile Number:{holder.CustomerDetails.MobileNumber} \n*+*+* Location: {holder.CustomerDetails.AddressDetails.Location} \n*+*+* Pincode: {holder.CustomerDetails.AddressDetails.Pincode} \n*+*+* Aadhar Number = {holder.CustomerDetails.AadharNumber} ");
-            Console.WriteLine(Constants.ifCorrectPressYToProcced);
-        }
+    public string GenerateAccountNumber(AccountHolder holder)
+    {
+        var uniqueValue = holder.ContactDetails.MobileNumber.ToString();
+        holder.AccountDetails.AccountNumber = $"ACCX{holder.PersonalDetails.FirstName[0]}{holder.ContactDetails.Address.City[0]}{uniqueValue[0]}{uniqueValue[4]}";
+        return holder.AccountDetails.AccountNumber;
+    }
+    public bool IsAccountDetailsCorrect(AccountHolder holder, string dataIsCorrect)
+    {
+        Console.WriteLine(Constants.seperateLine);
+        return dataIsCorrect.ToLower().Equals("y");
+    }
 
-         public string GenerateAccountNumber(AccountHolder holder)
-        {
-            var uniqueValue = holder.CustomerDetails.MobileNumber.ToString();
-            holder.AccountDetails.AccountNumber = $"ACCX{holder.CustomerDetails.FullName[0]}{uniqueValue[0]}{uniqueValue[1]}";
-            return holder.AccountDetails.AccountNumber;
-        }
-        public void HelpService()
-        {
-             Console.WriteLine(Constants.writeEmailandQuery);
-             Console.ReadLine();
-             Console.WriteLine(Constants.teamWillReachOutToYou);
-        }
+    public void HelpService()
+    {
+        Console.WriteLine(Constants.writeEmailandQuery);
+        Console.ReadLine();
+        Console.WriteLine(Constants.teamWillReachOutToYou);
+    }
 
     public void DisplayAllAccountHolders()
     {
         Console.WriteLine("Account Holders : ");
-        foreach (var accountHolder in AccountData.AccountHoldersDetails)
+
+        using (var context = new TezoBankContext())
         {
-            Console.WriteLine(Constants.seperateLine);
-            Console.WriteLine($"Account Number: {accountHolder.AccountDetails.AccountNumber}");
-            Console.WriteLine($"Full Name: {accountHolder.CustomerDetails.FullName}");
-            Console.WriteLine($"Mobile Number: {accountHolder.CustomerDetails.MobileNumber}");
-            Console.WriteLine($"Balance: {accountHolder.AccountDetails.Balance}");
-            Console.WriteLine($"Created at: {accountHolder.CreatedOn}");
-            Console.WriteLine($"Last Modified at : {accountHolder.LastModifiedOn}");
-            Console.WriteLine(Constants.seperateLine);
-            Console.WriteLine();
+            foreach (var customer in context.PersonalDetails)
+            {
+                Console.WriteLine(Constants.seperateLine);
+                Console.WriteLine($"Account Number: {customer.Id}");
+                Console.WriteLine($"Full Name: {customer.FirstName}{customer.LastName}");
+                Console.WriteLine($"Age: {customer.Age}");
+                Console.WriteLine(Constants.seperateLine);
+                Console.WriteLine();
+            }
+
         }
     }
 
     public static void PrintAmount(AccountHolder accountHolder)
     {
-        Console.WriteLine($"{Constants.yourBalanceIs} {accountHolder.AccountDetails.Balance}");
-        Console.WriteLine(Constants.thankYou);
+        using (var context = new TezoBankContext())
+        {
+            var holder = context.AccountDetails.FirstOrDefault(e => e.AccountNumber == accountHolder.Id);
+            Console.WriteLine($"*** {Constants.yourBalanceIs} {holder.Balance} Rs/-");
+            Console.WriteLine(Constants.thankYou);
+        }
     }
 
     public static void DisplayTransationHistory(Transaction transaction)
     {
-            switch (transaction.Type)
-            {
-                case TransferType.Transfer:
-                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccount.AccountDetails.AccountNumber} to {transaction.ReceiverAccount.AccountDetails.AccountNumber}");
-                    break;
+        switch (transaction.Type)
+        {
+            case 3:
+                Console.WriteLine($"On {transaction.Time}, {transaction.Amount} has been transferred from {transaction.UserAccountId} to {transaction.ReceiverAccountId}");
 
-                case TransferType.Credit:
-                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccount.AccountDetails.AccountNumber}");
-                    break;
+                break;
 
-                default:
-                    Console.WriteLine($"At {transaction.Time}, {transaction.Amount} has been debited from {transaction.UserAccount.AccountDetails.AccountNumber}");
-                    break;
-            }
+            case 1:
+                Console.WriteLine($"On {transaction.Time}, {transaction.Amount} has been credited to {transaction.UserAccountId}");
+                break;
+
+            case 2:
+                Console.WriteLine($"On {transaction.Time}, {transaction.Amount} has been debited from {transaction.ReceiverAccountId}");
+                break;
+        }
     }
 
-    
-}
+    public static bool IsValidEmail(string email)
+    {
+        string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+        return Regex.IsMatch(email, pattern);
+    }
 
+}
